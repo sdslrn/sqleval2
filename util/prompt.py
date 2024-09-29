@@ -54,8 +54,8 @@ example_template_3 = (f"# Requirement:\n{requirement_3}\n"
                       f"# Sql:\n{sql_3}\n"
                       f"# Graph:\n{graph_3}")
 
-sql_4 = """SELECT T2.Street, T2.City, T2.Zip, T2.State FROM schools AS T2 INNER JOIN (SELECT cds, CAST(NumGE1500 AS REAL) / NumTstTakr AS rate FROM satscores WHERE NumGE1500 IS NOT NULL AND NumTstTakr IS NOT NULL AND NumTstTakr != 0) AS T1 ON T2.CDSCode = T1.cds WHERE T1.rate = (SELECT MIN(CAST(NumGE1500 AS REAL) / NumTstTakr) AS min_rate FROM satscores WHERE NumGE1500 IS NOT NULL AND NumTstTakr IS NOT NULL AND NumTstTakr != 0) ORDER BY T2.CDSCode"""
-requirement_4 = "Execellence Rate = NumGE1500 / NumTstTakr; complete address has Street, City, Zip, State"
+sql_4 = """update student set tot_cred = (select case when sum(credits) is not null then sum(credits) else 0 end from takes natural join course where student.ID = takes.ID and takes.grade <> 'F' and takes.grade is not null);"""
+requirement_4 = "If a student has not successfully completed any course, the above update operation will make its tot_cred attribute value null. I want to set the tot_cred attribute value of these students to 0."
 
 prompt = ("The goal is to construct a directed graph representation from a given sqlite statements(SQL). "
           "Each node in the graph represents a SQL statement, and the edges represent the order of execution. The subsequent nodes depend on the execution of the previous nodes."
