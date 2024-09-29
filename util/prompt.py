@@ -56,8 +56,8 @@ example_template_3 = (f"# Requirement:\n{requirement_3}\n"
                       f"# Sql:\n{sql_3}\n"
                       f"# Graph:\n{graph_3}")
 
-sql_3 = """SELECT T2.Street, T2.City, T2.Zip, T2.State FROM schools AS T2 INNER JOIN (SELECT cds, CAST(NumGE1500 AS REAL) / NumTstTakr AS rate FROM satscores WHERE NumGE1500 IS NOT NULL AND NumTstTakr IS NOT NULL AND NumTstTakr != 0) AS T1 ON T2.CDSCode = T1.cds WHERE T1.rate = (SELECT MIN(CAST(NumGE1500 AS REAL) / NumTstTakr) AS min_rate FROM satscores WHERE NumGE1500 IS NOT NULL AND NumTstTakr IS NOT NULL AND NumTstTakr != 0) ORDER BY T2.CDSCode"""
-requirement_3 = "Execellence Rate = NumGE1500 / NumTstTakr; complete address has Street, City, Zip, State"
+sql_4 = """SELECT T2.Street, T2.City, T2.Zip, T2.State FROM schools AS T2 INNER JOIN (SELECT cds, CAST(NumGE1500 AS REAL) / NumTstTakr AS rate FROM satscores WHERE NumGE1500 IS NOT NULL AND NumTstTakr IS NOT NULL AND NumTstTakr != 0) AS T1 ON T2.CDSCode = T1.cds WHERE T1.rate = (SELECT MIN(CAST(NumGE1500 AS REAL) / NumTstTakr) AS min_rate FROM satscores WHERE NumGE1500 IS NOT NULL AND NumTstTakr IS NOT NULL AND NumTstTakr != 0) ORDER BY T2.CDSCode"""
+requirement_4 = "Execellence Rate = NumGE1500 / NumTstTakr; complete address has Street, City, Zip, State"
 
 prompt = ("The goal is to construct a directed graph representation from a given sqlite statements(SQL). "
           "This graph should faithfully reflect the sequence of topological execution of the atomic SQL statements to achieve the requirements. "
@@ -68,9 +68,9 @@ prompt = ("The goal is to construct a directed graph representation from a given
           f"{example_template_2}\n\n"
           "Please build the graph according to the following Requirement and Sql. Please note that just output the final linear graph. Do not include any other superfluous descriptions.\n\n"
           "# Requirements:\n"
-          f"{requirement_3}\n"
+          f"{requirement_4}\n"
           "# Sql:\n"
-          f"{sql_3}\n"
+          f"{sql_4}\n"
           "# Graph:\n")
 
 print(prompt)
