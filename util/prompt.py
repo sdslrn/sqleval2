@@ -29,7 +29,7 @@ graph_2 = """
     "edges": [
         {"source": 1, "target": 2},
         {"source": 2, "target": 3},
-        {"source": 2, "target": 4}
+        {"source": 3, "target": 4}
     ]
 """
 example_template_2 = (f"# Requirement:\n{requirement_2}\n"
