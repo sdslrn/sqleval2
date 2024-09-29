@@ -1,0 +1,15 @@
+{
+    "nodes": [
+        {"id" : 1, "sql statement" : "select sum(credits) from takes;"},
+        {"id" : 2, "sql statement" : "select sum(credits) from takes natural join course;"},
+        {"id" : 3, "sql statement" : "select sum(credits) from takes natural join course where student.ID = takes.ID and takes.grade <> 'F' and takes.grade is not null;"},
+        {"id" : 4, "sql statement" : "select case when sum(credits) is not null then sum(credits) else 0 end from takes natural join course where student.ID = takes.ID and takes.grade <> 'F' and takes.grade is not null;"},
+        {"id" : 5, "sql statement" : "update student set tot_cred = (select case when sum(credits) is not null then sum(credits) else 0 end from takes natural join course where student.ID = takes.ID and takes.grade <> 'F' and takes.grade is not null);"}
+    ],
+    "edges": [
+        {"source": 1, "target": 2},
+        {"source": 2, "target": 3},
+        {"source": 3, "target": 4},
+        {"source": 4, "target": 5}
+    ]
+}

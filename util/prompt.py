@@ -54,7 +54,11 @@ example_template_3 = (f"# Requirement:\n{requirement_3}\n"
                       f"# Sql:\n{sql_3}\n"
                       f"# Graph:\n{graph_3}")
 
-sql_4 = """update student set tot_cred = (select case when sum(credits) is not null then sum(credits) else 0 end from takes natural join course where student.ID = takes.ID and takes.grade <> 'F' and takes.grade is not null);"""
+sql_4 = """update student set tot_cred = 
+(select 
+case when sum(credits) is not null then sum(credits) else 0 end 
+from takes natural join course 
+where student.ID = takes.ID and takes.grade <> 'F' and takes.grade is not null);"""
 requirement_4 = "If a student has not successfully completed any course, the above update operation will make its tot_cred attribute value null. I want to set the tot_cred attribute value of these students to 0."
 
 prompt = ("The goal is to construct a directed graph representation from a given sqlite statements(SQL). "
