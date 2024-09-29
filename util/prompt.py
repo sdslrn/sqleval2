@@ -23,7 +23,7 @@ graph_2 = """
     "nodes": [
         {"id" : 1, "sql statement" : "select sum(credits) from takes;"},
         {"id" : 2, "sql statement" : "select sum(credits) from takes natural join course;"},
-        {"id" : 3, "sql statement" : "select sum(credits) from takes natural join course where student.ID = takes.ID and takes.grade <> 'F' and takes.grade is not null;"}
+        {"id" : 3, "sql statement" : "select sum(credits) from takes natural join course where student.ID = takes.ID and takes.grade <> 'F' and takes.grade is not null;"},
         {"id" : 4, "sql statement" : "update student set tot_cred = (select sum(credits) from takes natural join course where student.ID = takes.ID and takes.grade <> 'F' and takes.grade is not null);"}
     ],
     "edges": [
@@ -42,14 +42,12 @@ sql_3 = "SELECT T2.Street, T2.City, T2.Zip, T2.State FROM schools AS T2 INNER JO
 graph_3 = """
     "nodes": [
         {"id" : 1, "sql statement" : "SELECT cds, CAST(NumGE1500 AS REAL) / NumTstTakr AS rate FROM satscores WHERE NumGE1500 IS NOT NULL AND NumTstTakr IS NOT NULL AND NumTstTakr != 0;"},
-        {"id" : 2, "sql statement" : "select sum(credits) from takes natural join course;"},
-        {"id" : 3, "sql statement" : "select sum(credits) from takes natural join course where student.ID = takes.ID and takes.grade <> 'F' and takes.grade is not null;"}
-        {"id" : 4, "sql statement" : "update student set tot_cred = (select sum(credits) from takes natural join course where student.ID = takes.ID and takes.grade <> 'F' and takes.grade is not null);"}
-    ],
+        {"id" : 2, "sql statement" : "SELECT MIN(CAST(NumGE1500 AS REAL) / NumTstTakr) AS min_rate FROM satscores WHERE NumGE1500 IS NOT NULL AND NumTstTakr IS NOT NULL AND NumTstTakr != 0;"},
+        {"id" : 3, "sql statement" : "SELECT T2.Street, T2.City, T2.Zip, T2.State FROM schools AS T2 INNER JOIN (SELECT cds, CAST(NumGE1500 AS REAL) / NumTstTakr AS rate FROM satscores WHERE NumGE1500 IS NOT NULL AND NumTstTakr IS NOT NULL AND NumTstTakr != 0) AS T1 ON T2.CDSCode = T1.cds WHERE T1.rate = (SELECT MIN(CAST(NumGE1500 AS REAL) / NumTstTakr) AS min_rate FROM satscores WHERE NumGE1500 IS NOT NULL AND NumTstTakr IS NOT NULL AND NumTstTakr != 0) ORDER BY T2.CDSCode;"}
+        ],
     "edges": [
-        {"source": 1, "target": 2},
-        {"source": 2, "target": 3},
-        {"source": 2, "target": 4}
+        {"source": 1, "target": 3},
+        {"source": 2, "target": 3}
     ]
 """
 example_template_3 = (f"# Requirement:\n{requirement_3}\n"
@@ -60,12 +58,15 @@ sql_4 = """SELECT T2.Street, T2.City, T2.Zip, T2.State FROM schools AS T2 INNER 
 requirement_4 = "Execellence Rate = NumGE1500 / NumTstTakr; complete address has Street, City, Zip, State"
 
 prompt = ("The goal is to construct a directed graph representation from a given sqlite statements(SQL). "
+          "Each node in the graph represents a SQL statement, and the edges represent the order of execution. The subsequent nodes depend on the execution of the previous nodes."
           "This graph should faithfully reflect the sequence of topological execution of the atomic SQL statements to achieve the requirements. "
           "The following includes three cases, including Requirement, Sql, and Graph.\n\n"
           "## Example 1\n"
           f"{example_template_1}\n\n"
           "## Example 2\n"
           f"{example_template_2}\n\n"
+          "## Example 3\n"
+          f"{example_template_3}\n\n"
           "Please build the graph according to the following Requirement and Sql. Please note that just output the final linear graph. Do not include any other superfluous descriptions.\n\n"
           "# Requirements:\n"
           f"{requirement_4}\n"
