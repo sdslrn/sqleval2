@@ -54,13 +54,17 @@ example_template_3 = (f"# Requirement:\n{requirement_3}\n"
                       f"# Sql:\n{sql_3}\n"
                       f"# Graph:\n{graph_3}")
 
-sql_4 = """SELECT County FROM (SELECT County, COUNT(School) AS SchoolCount FROM schools WHERE strftime('%Y', ClosedDate) BETWEEN '1980' AND '1989' AND StatusType = 'Closed' AND SOC = 11 GROUP BY County) WHERE SchoolCount = (SELECT MAX(SchoolCount) FROM (SELECT COUNT(School) AS SchoolCount FROM schools WHERE strftime('%Y', ClosedDate) BETWEEN '1980' AND '1989' AND StatusType = 'Closed' AND SOC = 11 GROUP BY County));"""
-requirement_4 = "Which county reported the most number of school closure in the 1980s with school wonership code belonging to Youth Authority Facilities (CEA)? Youth Authority Facilities (CEA) refers to SOC = 11; 1980s = years between 1980 and 1989."
+sql_4 = "update student set tot_cred = (select case when sum(credits) is not null then sum(credits) else 0 end from takes natural join course where student.ID = takes.ID and takes.grade <> 'F' and takes.grade is not null);"
+#"""SELECT County FROM (SELECT County, COUNT(School) AS SchoolCount FROM schools WHERE strftime('%Y', ClosedDate) BETWEEN '1980' AND '1989' AND StatusType = 'Closed' AND SOC = 11 GROUP BY County) WHERE SchoolCount = (SELECT MAX(SchoolCount) FROM (SELECT COUNT(School) AS SchoolCount FROM schools WHERE strftime('%Y', ClosedDate) BETWEEN '1980' AND '1989' AND StatusType = 'Closed' AND SOC = 11 GROUP BY County));"""
+requirement_4 = "If a student has not successfully completed any course, the above update operation will make its tot_cred attribute value null. I want to set the tot_cred attribute value of these students to 0."
+    #"Which county reported the most number of school closure in the 1980s with school wonership code belonging to Youth Authority Facilities (CEA)? Youth Authority Facilities (CEA) refers to SOC = 11; 1980s = years between 1980 and 1989."
 
-prompt = ("The goal is to construct a directed graph representation from a given sqlite statements(SQL). "
-          "Each node in the graph represents a SQL statement, and the edges represent the order of execution. The subsequent nodes depend on the execution of the previous nodes."
-          "This graph should faithfully reflect the sequence of topological execution of the atomic SQL statements to achieve the requirements. "
-          "The following includes three cases, including Requirement, Sql, and Graph.\n\n"
+prompt = (
+"The goal is to construct a directed graph representation from a given sqlite SQL statement to represent the gradual advancement of functional implementation and eventually complete all requirements."
+"Each node in the graph represents a SQL statement, which is a subsequence of a given SQL statement, and the edge represents the execution order. Subsequent nodes are the progression of the previous node, and the last node should be the original given SQL statement."
+"This graph should faithfully reflect the topological execution order of SQL statements to achieve requirements."
+"The following includes three cases, including requirements, Sql, and Graph.\n\n"
+
           "## Example 1\n"
           f"{example_template_1}\n\n"
           "## Example 2\n"
