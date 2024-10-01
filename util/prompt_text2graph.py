@@ -1,3 +1,5 @@
+
+
 requirement_1 = "find which tracks were composed by composer's name contain Smith."
 sql_1 = """SELECT name,albumid,composer FROM tracks WHERE composer LIKE '%Smith%' ORDER BY albumid;"""
 graph_1 = """
@@ -54,21 +56,24 @@ example_template_3 = (f"# Requirement:\n{requirement_3}\n"
                       f"# Sql:\n{sql_3}\n"
                       f"# Graph:\n{graph_3}")
 sql_4 = """ SELECT T3.account_id FROM client AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id INNER JOIN account AS T3 ON T2.district_id = T3.district_id WHERE T1.gender = 'F' AND T1.birth_date = (SELECT MIN(birth_date) FROM client WHERE gender = 'F') AND T2.A11 = (SELECT MIN(T2.A11) FROM client AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id WHERE T1.gender = 'F' AND T1.birth_date = (SELECT MIN(birth_date) FROM client WHERE gender = 'F')); """
-# requirement_4 = "If a student has not successfully completed any course, the above update operation will make its tot_cred attribute value null. I want to set the tot_cred attribute value of these students to 0."
-# requirement_4 = "Which county reported the most number of school closure in the 1980s with school wonership code belonging to Youth Authority Facilities (CEA)? Youth Authority Facilities (CEA) refers to SOC = 11; 1980s = years between 1980 and 1989."
 requirement_4 = "Name the account numbers of female clients who are oldest and have lowest average salary? Female refers to 'F' in the gender; A11 contains information about average salary."
 
+# requirement_4 = "If a student has not successfully completed any course, the above update operation will make its tot_cred attribute value null. I want to set the tot_cred attribute value of these students to 0."
+# sql_4 = "update student set tot_cred = (select case when sum(credits) is not null then sum(credits) else 0 end from takes natural join course where student.ID = takes.ID and takes.grade <> 'F' and takes.grade is not null);"
+
+# requirement_4 = "Which county reported the most number of school closure in the 1980s with school wonership code belonging to Youth Authority Facilities (CEA)? Youth Authority Facilities (CEA) refers to SOC = 11; 1980s = years between 1980 and 1989."
+# sql_4 = """SELECT County FROM (SELECT County, COUNT(School) AS SchoolCount FROM schools WHERE strftime('%Y', ClosedDate) BETWEEN '1980' AND '1989' AND StatusType = 'Closed' AND SOC = 11 GROUP BY County) WHERE SchoolCount = (SELECT MAX(SchoolCount) FROM (SELECT COUNT(School) AS SchoolCount FROM schools WHERE strftime('%Y', ClosedDate) BETWEEN '1980' AND '1989' AND StatusType = 'Closed' AND SOC = 11 GROUP BY County));"""
+
 # sql_4 = "SELECT T1.superhero_name FROM superhero AS T1 INNER JOIN hero_attribute AS T2 ON T1.id = T2.hero_id INNER JOIN attribute AS T3 ON T3.id = T2.attribute_id INNER JOIN publisher AS T4 ON T4.id = T1.publisher_id WHERE T4.publisher_name = 'Dark Horse Comics' AND T2.attribute_value = (SELECT MAX(T5.attribute_value) FROM superhero AS T6 INNER JOIN hero_attribute AS T5 ON T6.id = T5.hero_id INNER JOIN publisher AS T7 ON T7.id = T6.publisher_id WHERE T7.publisher_name = 'Dark Horse Comics';"
-# #"update student set tot_cred = (select case when sum(credits) is not null then sum(credits) else 0 end from takes natural join course where student.ID = takes.ID and takes.grade <> 'F' and takes.grade is not null);"
-# #"""SELECT County FROM (SELECT County, COUNT(School) AS SchoolCount FROM schools WHERE strftime('%Y', ClosedDate) BETWEEN '1980' AND '1989' AND StatusType = 'Closed' AND SOC = 11 GROUP BY County) WHERE SchoolCount = (SELECT MAX(SchoolCount) FROM (SELECT COUNT(School) AS SchoolCount FROM schools WHERE strftime('%Y', ClosedDate) BETWEEN '1980' AND '1989' AND StatusType = 'Closed' AND SOC = 11 GROUP BY County));"""
 # requirement_4 = "Which superhero has the most durability published by Dark Horse Comics? which superhero refers to superhero_name; most durability refers to MAX(attribute_value) WHERE attribute_name = 'durability'; published by Dark Horse Comics refers to publisher_name = 'Dark Horse Comics';"
-# #"If a student has not successfully completed any course, the above update operation will make its tot_cred attribute value null. I want to set the tot_cred attribute value of these students to 0."
-#     #"Which county reported the most number of school closure in the 1980s with school wonership code belonging to Youth Authority Facilities (CEA)? Youth Authority Facilities (CEA) refers to SOC = 11; 1980s = years between 1980 and 1989."
+#"If a student has not successfully completed any course, the above update operation will make its tot_cred attribute value null. I want to set the tot_cred attribute value of these students to 0."
+    #"Which county reported the most number of school closure in the 1980s with school wonership code belonging to Youth Authority Facilities (CEA)? Youth Authority Facilities (CEA) refers to SOC = 11; 1980s = years between 1980 and 1989."
 
 prompt = (
 "The goal is to construct a directed graph representation from a given sqlite SQL statement to represent the gradual advancement of functional implementation and eventually complete all requirements."
-"Each node in the graph represents a SQL statement, which is a subsequence of a given SQL statement, and the edge represents the execution order. Subsequent nodes are the progression of the previous node, and the last node should be the original given SQL statement."
-"This graph should faithfully reflect the topological execution order of SQL statements to achieve requirements."
+"Each node in the graph represents a SQL statement, which is a subsequence of a given SQL statement, and the edge represents the execution order. "
+"Subsequent nodes are the progression of the previous node. ( please attention the last node should be the original given SQL statement. )"
+"This graph should faithfully reflect the topological execution order of SQL statements to achieve requirements. "
 "The following includes three cases, including requirements, Sql, and Graph.\n\n"
 
           "## Example 1\n"
