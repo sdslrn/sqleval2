@@ -26,3 +26,42 @@
         {"source": 2, "target": 3}
     ]
 }
+
+{
+    "nodes": [
+        {"id" : 1, "sql statement" : "select sum(credits) from takes;", "requirement":"Calculate the total sum of credits from the 'takes' table."},
+        {"id" : 2, "sql statement" : "select sum(credits) from takes natural join course;", "requirement":"Calculate the total sum of credits by joining the 'takes' table and the 'course' table using a natural join."},
+        {"id" : 3, "sql statement" : "select sum(credits) from takes natural join course where student.ID = takes.ID and takes.grade <> 'F' and takes.grade is not null;", "requirement":"Calculate the total sum of credits from courses where the student's grade is neither 'F' nor null, implying successful course completion. This involves a natural join between the 'takes' and 'course' tables and requires matching student IDs in both tables."},
+        {"id" : 4, "sql statement" : "select case when sum(credits) is not null then sum(credits) else 0 end from takes natural join course where student.ID = takes.ID and takes.grade <> 'F' and takes.grade is not null;", "requirement":"Calculate the sum of credits or zero if null for courses where a student's grade is neither 'F' nor null. This considers students who have not successfully completed any course."},
+        {"id" : 5, "sql statement" : "update student set tot_cred = (select case when sum(credits) is not null then sum(credits) else 0 end from takes natural join course where student.ID = takes.ID and takes.grade <> 'F' and takes.grade is not null);", "requirement":"If a student has not successfully completed any course, the above update operation will make its tot_cred attribute value null. I want to set the tot_cred attribute value of these students to 0."}
+    ],
+    "edges": [
+        {"source": 1, "target": 2},
+        {"source": 2, "target": 3},
+        {"source": 3, "target": 4},
+        {"source": 4, "target": 5}
+    ]
+}
+{
+    "nodes": [
+        {"id": 1, "sql statement": "SELECT County, COUNT(School) AS SchoolCount FROM schools WHERE strftime('%Y', ClosedDate) BETWEEN '1980' AND '1989' AND StatusType = 'Closed' AND SOC = 11 GROUP BY County;", "requirement": "Calculate the number of closed schools per county for Youth Authority Facilities during the 1980s."},
+        {"id": 2, "sql statement": "SELECT MAX(SchoolCount) FROM (SELECT County, COUNT(School) AS SchoolCount FROM schools WHERE strftime('%Y', ClosedDate) BETWEEN '1980' AND '1989' AND StatusType = 'Closed' AND SOC = 11 GROUP BY County);", "requirement": "Determine the maximum number of schools closed in any county during the 1980s for Youth Authority Facilities."},
+        {"id": 3, "sql statement": "SELECT County FROM (SELECT County, COUNT(School) AS SchoolCount FROM schools WHERE strftime('%Y', ClosedDate) BETWEEN '1980' AND '1989' AND StatusType = 'Closed' AND SOC = 11 GROUP BY County) WHERE SchoolCount = (SELECT MAX(SchoolCount) FROM (SELECT County, COUNT(School) AS SchoolCount FROM schools WHERE strftime('%Y', ClosedDate) BETWEEN '1980' AND '1989' AND StatusType = 'Closed' AND SOC = 11 GROUP BY County));", "requirement": "Identify the county that reported the most number of school closures among Youth Authority Facilities during the 1980s."}
+    ],
+    "edges": [
+        {"source": 1, "target": 2},
+        {"source": 2, "target": 3}
+    ]
+}
+
+{
+    "nodes": [
+        {"id": 1, "sql statement": "SELECT County, COUNT(School) AS SchoolCount FROM schools WHERE strftime('%Y', ClosedDate) BETWEEN '1980' AND '1989' AND StatusType = 'Closed' AND SOC = 11 GROUP BY County;", "requirement": "Calculate the number of closed schools per county for Youth Authority Facilities during the 1980s."},
+        {"id": 2, "sql statement": "SELECT MAX(SchoolCount) FROM (SELECT County, COUNT(School) AS SchoolCount FROM schools WHERE strftime('%Y', ClosedDate) BETWEEN '1980' AND '1989' AND StatusType = 'Closed' AND SOC = 11 GROUP BY County);", "requirement": "Determine the maximum number of schools closed in any county during the 1980s for Youth Authority Facilities."},
+        {"id": 3, "sql statement": "SELECT County FROM (SELECT County, COUNT(School) AS SchoolCount FROM schools WHERE strftime('%Y', ClosedDate) BETWEEN '1980' AND '1989' AND StatusType = 'Closed' AND SOC = 11 GROUP BY County) WHERE SchoolCount = (SELECT MAX(SchoolCount) FROM (SELECT County, COUNT(School) AS SchoolCount FROM schools WHERE strftime('%Y', ClosedDate) BETWEEN '1980' AND '1989' AND StatusType = 'Closed' AND SOC = 11 GROUP BY County));", "requirement": "Identify the county that reported the most number of school closures among Youth Authority Facilities during the 1980s."}
+    ],
+    "edges": [
+        {"source": 1, "target": 2},
+        {"source": 2, "target": 3}
+    ]
+}
