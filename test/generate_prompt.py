@@ -1,9 +1,7 @@
 import json
-
 from util.prompt_text2graph import get_prompt
 
 input_path = '../data/dev_tied_append.json'
-
 output_path = '../data/updated_dev_tied_append.json'
 
 with open(input_path,'r',encoding='utf-8') as f:

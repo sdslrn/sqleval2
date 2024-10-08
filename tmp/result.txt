@@ -9,6 +9,17 @@
     {"source": 1, "target": 3}
 ]
 
+{
+    "nodes": [
+        {"id": 1, "sql statement": "SELECT cds, CAST(NumGE1500 AS REAL) / NumTstTakr AS rate FROM satscores WHERE NumGE1500 IS NOT NULL AND NumTstTakr IS NOT NULL AND NumTstTakr != 0;"},
+        {"id": 2, "sql statement": "SELECT MIN(CAST(NumGE1500 AS REAL) / NumTstTakr) AS min_rate FROM satscores WHERE NumGE1500 IS NOT NULL AND NumTstTakr IS NOT NULL AND NumTstTakr != 0;"},
+        {"id": 3, "sql statement": "SELECT T2.Street, T2.City, T2.Zip, T2.State FROM schools AS T2 INNER JOIN (SELECT cds, CAST(NumGE1500 AS REAL) / NumTstTakr AS rate FROM satscores WHERE NumGE1500 IS NOT NULL AND NumTstTakr IS NOT NULL AND NumTstTakr != 0) AS T1 ON T2.CDSCode = T1.cds WHERE T1.rate = (SELECT MIN(CAST(NumGE1500 AS REAL) / NumTstTakr) AS min_rate FROM satscores WHERE NumGE1500 IS NOT NULL AND NumTstTakr IS NOT NULL AND NumTstTakr != 0) ORDER BY T2.CDSCode;"}
+    ],
+    "edges": [
+        {"source": 1, "target": 3},
+        {"source": 2, "target": 3}
+    ]
+}
 
 {
     "nodes": [
@@ -38,3 +49,14 @@
         {"source": 4, "target": 5}
     ]
 }
+
+
+"nodes": [
+    {"id" : 1, "sql statement" : "SELECT County, COUNT(School) AS SchoolCount FROM schools WHERE strftime('%Y', ClosedDate) BETWEEN '1980' AND '1989' AND StatusType = 'Closed' AND SOC = 11 GROUP BY County;"},
+    {"id" : 2, "sql statement" : "SELECT MAX(SchoolCount) FROM (SELECT COUNT(School) AS SchoolCount FROM schools WHERE strftime('%Y', ClosedDate) BETWEEN '1980' AND '1989' AND StatusType = 'Closed' AND SOC = 11 GROUP BY County);"},
+    {"id" : 3, "sql statement" : "SELECT County FROM (SELECT County, COUNT(School) AS SchoolCount FROM schools WHERE strftime('%Y', ClosedDate) BETWEEN '1980' AND '1989' AND StatusType = 'Closed' AND SOC = 11 GROUP BY County) WHERE SchoolCount = (SELECT MAX(SchoolCount) FROM (SELECT COUNT(School) AS SchoolCount FROM schools WHERE strftime('%Y', ClosedDate) BETWEEN '1980' AND '1989' AND StatusType = 'Closed' AND SOC = 11 GROUP BY County));"}
+],
+"edges": [
+    {"source": 1, "target": 3},
+    {"source": 2, "target": 3}
+]

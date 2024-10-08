@@ -1,0 +1,77 @@
+id,prompt,sql,graph,requirement
+68,"The goal is to construct a directed graph representation from a given sqlite SQL statement to represent the gradual advancement of functional implementation and eventually complete all requirements.Each node in the graph represents a SQL statement, which is a subsequence of a given SQL statement, and the edge represents the execution order. Subsequent nodes are the progression of the previous node. ( please attention the last node should be the original given SQL statement. )This graph should faithfully reflect the topological execution order of SQL statements to achieve requirements. The following includes three cases, including requirements, Sql, and Graph.
+
+## Example 1
+# Requirement:
+find which tracks were composed by composer's name contain Smith.
+# Sql:
+SELECT name,albumid,composer FROM tracks WHERE composer LIKE '%Smith%' ORDER BY albumid;
+# Graph:
+
+    ""nodes"": [
+        {""id"" : 1, ""sql statement"" : ""SELECT name,albumid,composer FROM tracks;""},
+        {""id"" : 2, ""sql statement"" : ""SELECT name,albumid,composer FROM tracks WHERE composer LIKE '%Smith%';""},
+        {""id"" : 3, ""sql statement"" : ""SELECT name,albumid,composer FROM tracks WHERE composer LIKE '%Smith%' ORDER BY albumid;""}
+    ],
+    ""edges"": [
+        {""source"": 1, ""target"": 2},
+        {""source"": 2, ""target"": 3}
+    ]
+
+
+## Example 2
+# Requirement:
+We set the tot_cred attribute value of each student tuple to the sum of the credits of the courses that the student has successfully completed. Assume that if a student's grade in a course is neither 'F' nor null, then he has successfully completed the course. Use the set clause.
+# Sql:
+update student set tot_cred = (select sum(credits) from takes natural join course where student.ID = takes.ID and takes.grade <> 'F' and takes.grade is not null);
+# Graph:
+
+    ""nodes"": [
+        {""id"" : 1, ""sql statement"" : ""select sum(credits) from takes;""},
+        {""id"" : 2, ""sql statement"" : ""select sum(credits) from takes natural join course;""},
+        {""id"" : 3, ""sql statement"" : ""select sum(credits) from takes natural join course where student.ID = takes.ID and takes.grade <> 'F' and takes.grade is not null;""},
+        {""id"" : 4, ""sql statement"" : ""update student set tot_cred = (select sum(credits) from takes natural join course where student.ID = takes.ID and takes.grade <> 'F' and takes.grade is not null);""}
+    ],
+    ""edges"": [
+        {""source"": 1, ""target"": 2},
+        {""source"": 2, ""target"": 3},
+        {""source"": 3, ""target"": 4}
+    ]
+
+
+## Example 3
+# Requirement:
+What is the complete address of the school with the lowest excellence rate? Indicate the Street, City, Zip and State.xecellence Rate = NumGE1500 / NumTstTakr; complete address has Street, City, Zip, State
+# Sql:
+SELECT T2.Street, T2.City, T2.Zip, T2.State FROM schools AS T2 INNER JOIN (SELECT cds, CAST(NumGE1500 AS REAL) / NumTstTakr AS rate FROM satscores WHERE NumGE1500 IS NOT NULL AND NumTstTakr IS NOT NULL AND NumTstTakr != 0) AS T1 ON T2.CDSCode = T1.cds WHERE T1.rate = (SELECT MIN(CAST(NumGE1500 AS REAL) / NumTstTakr) AS min_rate FROM satscores WHERE NumGE1500 IS NOT NULL AND NumTstTakr IS NOT NULL AND NumTstTakr != 0) ORDER BY T2.CDSCode;
+# Graph:
+
+    ""nodes"": [
+        {""id"" : 1, ""sql statement"" : ""SELECT cds, CAST(NumGE1500 AS REAL) / NumTstTakr AS rate FROM satscores WHERE NumGE1500 IS NOT NULL AND NumTstTakr IS NOT NULL AND NumTstTakr != 0;""},
+        {""id"" : 2, ""sql statement"" : ""SELECT MIN(CAST(NumGE1500 AS REAL) / NumTstTakr) AS min_rate FROM satscores WHERE NumGE1500 IS NOT NULL AND NumTstTakr IS NOT NULL AND NumTstTakr != 0;""},
+        {""id"" : 3, ""sql statement"" : ""SELECT T2.Street, T2.City, T2.Zip, T2.State FROM schools AS T2 INNER JOIN (SELECT cds, CAST(NumGE1500 AS REAL) / NumTstTakr AS rate FROM satscores WHERE NumGE1500 IS NOT NULL AND NumTstTakr IS NOT NULL AND NumTstTakr != 0) AS T1 ON T2.CDSCode = T1.cds WHERE T1.rate = (SELECT MIN(CAST(NumGE1500 AS REAL) / NumTstTakr) AS min_rate FROM satscores WHERE NumGE1500 IS NOT NULL AND NumTstTakr IS NOT NULL AND NumTstTakr != 0) ORDER BY T2.CDSCode;""}
+        ],
+    ""edges"": [
+        {""source"": 1, ""target"": 3},
+        {""source"": 2, ""target"": 3}
+    ]
+
+
+Please build the graph according to the following Requirement and Sql. Please note that just output the final linear graph. Do not include any other superfluous descriptions.
+
+# Requirements:
+Which county reported the most number of school closure in the 1980s with school wonership code belonging to Youth Authority Facilities (CEA)?Youth Authority Facilities (CEA) refers to SOC = 11; 1980s = years between 1980 and 1989
+# Sql:
+SELECT County FROM (SELECT County, COUNT(School) AS SchoolCount FROM schools WHERE strftime('%Y', ClosedDate) BETWEEN '1980' AND '1989' AND StatusType = 'Closed' AND SOC = 11 GROUP BY County) WHERE SchoolCount = (SELECT MAX(SchoolCount) FROM (SELECT COUNT(School) AS SchoolCount FROM schools WHERE strftime('%Y', ClosedDate) BETWEEN '1980' AND '1989' AND StatusType = 'Closed' AND SOC = 11 GROUP BY County))
+# Graph:","SELECT County FROM (SELECT County, COUNT(School) AS SchoolCount FROM schools WHERE strftime('%Y', ClosedDate) BETWEEN '1980' AND '1989' AND StatusType = 'Closed' AND SOC = 11 GROUP BY County) WHERE SchoolCount = (SELECT MAX(SchoolCount) FROM (SELECT COUNT(School) AS SchoolCount FROM schools WHERE strftime('%Y', ClosedDate) BETWEEN '1980' AND '1989' AND StatusType = 'Closed' AND SOC = 11 GROUP BY County))","""nodes"": [
+    {""id"" : 1, ""sql statement"" : ""SELECT County, COUNT(School) AS SchoolCount FROM schools WHERE strftime('%Y', ClosedDate) BETWEEN '1980' AND '1989' AND StatusType = 'Closed' AND SOC = 11 GROUP BY County;""},
+    {""id"" : 2, ""sql statement"" : ""SELECT MAX(SchoolCount) FROM (SELECT COUNT(School) AS SchoolCount FROM schools WHERE strftime('%Y', ClosedDate) BETWEEN '1980' AND '1989' AND StatusType = 'Closed' AND SOC = 11 GROUP BY County);""},
+    {""id"" : 3, ""sql statement"" : ""SELECT County FROM (SELECT County, COUNT(School) AS SchoolCount FROM schools WHERE strftime('%Y', ClosedDate) BETWEEN '1980' AND '1989' AND StatusType = 'Closed' AND SOC = 11 GROUP BY County) WHERE SchoolCount = (SELECT MAX(SchoolCount) FROM (SELECT COUNT(School) AS SchoolCount FROM schools WHERE strftime('%Y', ClosedDate) BETWEEN '1980' AND '1989' AND StatusType = 'Closed' AND SOC = 11 GROUP BY County));""}
+],
+""edges"": [
+    {""source"": 1, ""target"": 3},
+    {""source"": 2, ""target"": 3}
+]",
+,,,,
+,,,,
+,,,,
