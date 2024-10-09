@@ -6,7 +6,7 @@ import json
 # args_parser.add_argument("--idx", type=int, default=0)
 # args = args_parser.parse_args()
 
-data_path = "../data/requirement-check.json"
+data_path = "../data/sds/requirement-check.json"
 
 with open(data_path, 'r', encoding='utf-8') as f:
     data = json.load(f)

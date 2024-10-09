@@ -171,7 +171,7 @@ prompt = (
           f"{example_template_2}\n\n"
           "## Example 2\n"
           f"{example_template_3}\n\n"
-          "Please build the graph according to the following Requirement and Sql. Please note that just output the final linear graph. Do not include any other superfluous descriptions.\n\n"
+          "Please build the graph according to the following Requirement and Sql. Please note that just output the final graph. Do not include any other superfluous descriptions.\n\n"
           "# Requirements:\n"
           f"{requirement_4}\n"
           "# Sql:\n"

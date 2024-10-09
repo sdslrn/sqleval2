@@ -1,7 +1,7 @@
 import sqlite3
 
 # 连接到数据库（如果数据库不存在，则会创建一个新的）
-conn = sqlite3.connect('../data/univdb-sqlite-tmp.db')
+conn = sqlite3.connect('../data/sds/univdb-sqlite-tmp.db')
 
 # 创建一个游标对象（用于执行SQL命令）
 cursor = conn.cursor()
