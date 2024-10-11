@@ -104,3 +104,11 @@ prereq	CREATE TABLE prereq
 		on delete cascade,
 	 foreign key (prereq_id) references course
 	)
+
+UPDATE section SET building = 'Smith', room_number = '101' WHERE course_id = 'CS-101' AND semester = 'Fall' AND year = 2024;
+
+将所有在'Smith'楼101房间上课的课程的教师更改为'David Brown'。
+UPDATE teaches
+SET ID = (SELECT ID FROM instructor WHERE name = 'David Brown')
+WHERE (course_id, sec_id, semester, year) IN
+(SELECT course_id, sec_id, semester, year FROM section WHERE building = 'Smith' AND room_number = '101');
