@@ -1,14 +1,15 @@
-"nodes": [
-    {"id" : 1, "sql statement" : "SELECT MIN(birth_date) FROM client WHERE gender = 'F';"},
-    {"id" : 2, "sql statement" : "SELECT MIN(T2.A11) FROM client AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id WHERE T1.gender = 'F' AND T1.birth_date = (SELECT MIN(birth_date) FROM client WHERE gender = 'F');"},
-    {"id" : 3, "sql statement" : "SELECT T3.account_id FROM client AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id INNER JOIN account AS T3 ON T2.district_id = T3.district_id WHERE T1.gender = 'F' AND T1.birth_date = (SELECT MIN(birth_date) FROM client WHERE gender = 'F') AND T2.A11 = (SELECT MIN(T2.A11) FROM client AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id WHERE T1.gender = 'F' AND T1.birth_date = (SELECT MIN(birth_date) FROM client WHERE gender = 'F'));"}
-],
-"edges": [
-    {"source": 1, "target": 2},
-    {"source": 2, "target": 3},
-    {"source": 1, "target": 3}
-]
-
+{
+    "nodes": [
+        {"id" : 1, "sql statement" : "SELECT MIN(birth_date) FROM client WHERE gender = 'F';"},
+        {"id" : 2, "sql statement" : "SELECT MIN(T2.A11) FROM client AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id WHERE T1.gender = 'F' AND T1.birth_date = (SELECT MIN(birth_date) FROM client WHERE gender = 'F');"},
+        {"id" : 3, "sql statement" : "SELECT T3.account_id FROM client AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id INNER JOIN account AS T3 ON T2.district_id = T3.district_id WHERE T1.gender = 'F' AND T1.birth_date = (SELECT MIN(birth_date) FROM client WHERE gender = 'F') AND T2.A11 = (SELECT MIN(T2.A11) FROM client AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id WHERE T1.gender = 'F' AND T1.birth_date = (SELECT MIN(birth_date) FROM client WHERE gender = 'F'));"}
+    ],
+    "edges": [
+        {"source": 1, "target": 2},
+        {"source": 2, "target": 3},
+        {"source": 1, "target": 3}
+    ]
+}
 {
     "nodes": [
         {"id": 1, "sql statement": "SELECT cds, CAST(NumGE1500 AS REAL) / NumTstTakr AS rate FROM satscores WHERE NumGE1500 IS NOT NULL AND NumTstTakr IS NOT NULL AND NumTstTakr != 0;"},
@@ -50,13 +51,183 @@
     ]
 }
 
+{
+    "nodes": [
+        {"id" : 1, "sql statement" : "SELECT County, COUNT(School) AS SchoolCount FROM schools WHERE strftime('%Y', ClosedDate) BETWEEN '1980' AND '1989' AND StatusType = 'Closed' AND SOC = 11 GROUP BY County;"},
+        {"id" : 2, "sql statement" : "SELECT MAX(SchoolCount) FROM (SELECT COUNT(School) AS SchoolCount FROM schools WHERE strftime('%Y', ClosedDate) BETWEEN '1980' AND '1989' AND StatusType = 'Closed' AND SOC = 11 GROUP BY County);"},
+        {"id" : 3, "sql statement" : "SELECT County FROM (SELECT County, COUNT(School) AS SchoolCount FROM schools WHERE strftime('%Y', ClosedDate) BETWEEN '1980' AND '1989' AND StatusType = 'Closed' AND SOC = 11 GROUP BY County) WHERE SchoolCount = (SELECT MAX(SchoolCount) FROM (SELECT COUNT(School) AS SchoolCount FROM schools WHERE strftime('%Y', ClosedDate) BETWEEN '1980' AND '1989' AND StatusType = 'Closed' AND SOC = 11 GROUP BY County));"}
+    ],
+    "edges": [
+        {"source": 1, "target": 3},
+        {"source": 2, "target": 3}
+    ]
+}
+{
+    "nodes": [
+        {"id" : 1, "sql statement" : "SELECT MAX(Latitude) FROM schools;"},
+        {"id" : 2, "sql statement" : "SELECT T1.`School Type`, T1.`School Name`, T2.Latitude FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode;"},
+        {"id" : 3, "sql statement" : "SELECT T1.`School Type`, T1.`School Name`, T2.Latitude FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.Latitude = (SELECT MAX(Latitude) FROM schools);"}
+    ],
+    "edges": [
+        {"source": 1, "target": 3},
+        {"source": 2, "target": 3}
+    ]
+}
 
-"nodes": [
-    {"id" : 1, "sql statement" : "SELECT County, COUNT(School) AS SchoolCount FROM schools WHERE strftime('%Y', ClosedDate) BETWEEN '1980' AND '1989' AND StatusType = 'Closed' AND SOC = 11 GROUP BY County;"},
-    {"id" : 2, "sql statement" : "SELECT MAX(SchoolCount) FROM (SELECT COUNT(School) AS SchoolCount FROM schools WHERE strftime('%Y', ClosedDate) BETWEEN '1980' AND '1989' AND StatusType = 'Closed' AND SOC = 11 GROUP BY County);"},
-    {"id" : 3, "sql statement" : "SELECT County FROM (SELECT County, COUNT(School) AS SchoolCount FROM schools WHERE strftime('%Y', ClosedDate) BETWEEN '1980' AND '1989' AND StatusType = 'Closed' AND SOC = 11 GROUP BY County) WHERE SchoolCount = (SELECT MAX(SchoolCount) FROM (SELECT COUNT(School) AS SchoolCount FROM schools WHERE strftime('%Y', ClosedDate) BETWEEN '1980' AND '1989' AND StatusType = 'Closed' AND SOC = 11 GROUP BY County));"}
-],
-"edges": [
-    {"source": 1, "target": 3},
-    {"source": 2, "target": 3}
-]
+{
+    "nodes": [
+        {"id" : 1, "sql statement" : "SELECT MIN(Latitude) FROM schools WHERE State = 'CA' AND Latitude IS NOT NULL;"},
+        {"id" : 2, "sql statement" : "SELECT T2.City, T1.`Low Grade`, T1.`School Name` FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.State = 'CA' AND T2.Latitude IS NOT NULL;"},
+        {"id" : 3, "sql statement" : "SELECT T2.City, T1.`Low Grade`, T1.`School Name` FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.State = 'CA' AND T2.Latitude IS NOT NULL AND T2.Latitude = (SELECT MIN(Latitude) FROM schools WHERE State = 'CA' AND Latitude IS NOT NULL);"}
+    ],
+    "edges": [
+        {"source": 1, "target": 3},
+        {"source": 2, "target": 3}
+    ]
+}
+
+
+{
+    "nodes": [
+        {"id" : 1, "sql statement" : "SELECT MAX(ABS(longitude)) FROM schools;"},
+        {"id" : 2, "sql statement" : "SELECT GSoffered FROM schools WHERE ABS(longitude) = (SELECT MAX(ABS(longitude)) FROM schools);"}
+    ],
+    "edges": [
+        {"source": 1, "target": 2}
+    ]
+}
+
+{
+    "nodes": [
+        {"id" : 1, "sql statement" : "SELECT account_id FROM trans;"},
+        {"id" : 2, "sql statement" : "SELECT account_id FROM trans WHERE STRFTIME('%Y', date) = '1995';"},
+        {"id" : 3, "sql statement" : "SELECT account_id FROM trans WHERE STRFTIME('%Y', date) = '1995' ORDER BY date ASC;"},
+        {"id" : 4, "sql statement" : "SELECT account_id FROM trans WHERE STRFTIME('%Y', date) = '1995' ORDER BY date ASC LIMIT 1;"}
+     ],
+    "edges": [
+        {"source": 1, "target": 2},
+        {"source": 2, "target": 3},
+        {"source": 3, "target": 4}
+    ]
+}
+
+{
+    "nodes": [
+        {"id" : 1, "sql statement" : "SELECT molecule_id, COUNT(bond_type) AS bond_count FROM bond WHERE bond_type = '=' GROUP BY molecule_id;"},
+        {"id" : 2, "sql statement" : "SELECT molecule_id, COUNT(bond_type) AS bond_count FROM bond WHERE bond_type = '=' GROUP BY molecule_id HAVING bond_count = (SELECT MAX(bond_count) FROM (SELECT molecule_id, COUNT(bond_type) AS bond_count FROM bond WHERE bond_type = '=' GROUP BY molecule_id) AS subquery);"},
+        {"id" : 3, "sql statement" : "SELECT T1.label FROM molecule AS T1 INNER JOIN (SELECT T.molecule_id, COUNT(T.bond_type) AS bond_count FROM bond AS T WHERE T.bond_type = '=' GROUP BY T.molecule_id HAVING bond_count = (SELECT MAX(bond_count) FROM (SELECT molecule_id, COUNT(bond_type) AS bond_count FROM bond WHERE bond_type = '=' GROUP BY molecule_id) AS subquery) ORDER BY bond_count DESC) AS T2 ON T1.molecule_id = T2.molecule_id;"}
+    ],
+    "edges": [
+        {"source": 1, "target": 2},
+        {"source": 2, "target": 3}
+    ]
+}COUNT(bond_type) AS bond_count FROM bond WHERE bond_type = '=' GROUP BY molecule_id) AS subquery) ORDER BY bond_count DESC
+
+
+{
+    "nodes": [
+        {"id" : 1, "sql statement" : "SELECT T3.molecule_id, COUNT(T1.bond_type) AS bond_count FROM bond AS T1 INNER JOIN molecule AS T3 ON T1.molecule_id = T3.molecule_id WHERE T3.label = '+' AND T1.bond_type = '=' GROUP BY T3.molecule_id;"},
+        {"id" : 2, "sql statement" : "SELECT MAX(bond_count) FROM (SELECT T3.molecule_id, COUNT(T1.bond_type) AS bond_count FROM bond AS T1 INNER JOIN molecule AS T3 ON T1.molecule_id = T3.molecule_id WHERE T3.label = '+' AND T1.bond_type = '=' GROUP BY T3.molecule_id) AS subquery;"},
+        {"id" : 3, "sql statement" : "SELECT T3.molecule_id, COUNT(T1.bond_type) AS bond_count FROM bond AS T1 INNER JOIN molecule AS T3 ON T1.molecule_id = T3.molecule_id WHERE T3.label = '+' AND T1.bond_type = '=' GROUP BY T3.molecule_id HAVING bond_count = (SELECT MAX(bond_count) FROM (SELECT T3.molecule_id, COUNT(T1.bond_type) AS bond_count FROM bond AS T1 INNER JOIN molecule AS T3 ON T1.molecule_id = T3.molecule_id WHERE T3.label = '+' AND T1.bond_type = '=' GROUP BY T3.molecule_id) AS subquery);"},
+        {"id" : 4, "sql statement" : "SELECT T.molecule_id FROM (SELECT T3.molecule_id, COUNT(T1.bond_type) AS bond_count FROM bond AS T1 INNER JOIN molecule AS T3 ON T1.molecule_id = T3.molecule_id WHERE T3.label = '+' AND T1.bond_type = '=' GROUP BY T3.molecule_id HAVING bond_count = (SELECT MAX(bond_count) FROM (SELECT T3.molecule_id, COUNT(T1.bond_type) AS bond_count FROM bond AS T1 INNER JOIN molecule AS T3 ON T1.molecule_id = T3.molecule_id WHERE T3.label = '+' AND T1.bond_type = '=' GROUP BY T3.molecule_id) AS subquery) ORDER BY bond_count DESC) AS T;"}
+    ],
+    "edges": [
+        {"source": 1, "target": 2},
+        {"source": 1, "target": 3},
+        {"source": 2, "target": 3},
+        {"source": 3, "target": 4}
+    ]
+}
+
+{
+    "nodes": [
+        {"id" : 1, "sql statement" : "SELECT MAX(faceConvertedManaCost) FROM cards WHERE faceConvertedManaCost IS NOT NULL;"},
+        {"id" : 2, "sql statement" : "SELECT name FROM cards WHERE faceConvertedManaCost IS NOT NULL AND faceConvertedManaCost = (SELECT MAX(faceConvertedManaCost) FROM cards WHERE faceConvertedManaCost IS NOT NULL);"}
+    ],
+    "edges": [
+        {"source": 1, "target": 2}
+    ]
+}
+
+{
+    "nodes": [
+        {"id" : 1, "sql statement" : "SELECT COUNT(T1.id) AS card_count FROM sets AS T1 INNER JOIN set_translations AS T2 ON T1.code = T2.setCode WHERE T2.language = 'Russian' GROUP BY T1.baseSetSize;"},
+        {"id" : 2, "sql statement" : "SELECT MAX(card_count) FROM (SELECT COUNT(T1.id) AS card_count FROM sets AS T1 INNER JOIN set_translations AS T2 ON T1.code = T2.setCode WHERE T2.language = 'Russian' GROUP BY T1.baseSetSize) AS subquery;"},
+        {"id" : 3, "sql statement" : "SELECT T1.id FROM sets AS T1 INNER JOIN set_translations AS T2 ON T1.code = T2.setCode WHERE T2.language = 'Russian' GROUP BY T1.baseSetSize HAVING COUNT(T1.id) = (SELECT MAX(card_count) FROM (SELECT COUNT(T1.id) AS card_count FROM sets AS T1 INNER JOIN set_translations AS T2 ON T1.code = T2.setCode WHERE T2.language = 'Russian' GROUP BY T1.baseSetSize) AS subquery);" }
+    ],
+    "edges": [
+        {"source": 1, "target": 2},
+        {"source": 2, "target": 3}
+    ]
+}
+{
+    "nodes": [
+        {"id" : 1, "sql statement" : "SELECT T1.name FROM cards AS T1 INNER JOIN sets AS T2 ON T2.code = T1.setCode WHERE T2.name = 'Coldsnap';"},
+        {"id" : 2, "sql statement" : "SELECT MAX(convertedManaCost) FROM cards AS T1 INNER JOIN sets AS T2 ON T2.code = T1.setCode WHERE T2.name = 'Coldsnap';"},
+        {"id" : 3, "sql statement" : "SELECT T1.name FROM cards AS T1 INNER JOIN sets AS T2 ON T2.code = T1.setCode WHERE T2.name = 'Coldsnap' AND T1.convertedManaCost = (SELECT MAX(convertedManaCost) FROM cards AS T1 INNER JOIN sets AS T2 ON T2.code = T1.setCode WHERE T2.name = 'Coldsnap');"}
+    ],
+    "edges": [
+        {"source": 1, "target": 2},
+        {"source": 2, "target": 3}
+    ]
+}
+
+
+{
+    "nodes": [
+        {"id" : 1, "sql statement" : "SELECT T2.name FROM foreign_data AS T1 INNER JOIN cards AS T2 ON T2.uuid = T1.uuid INNER JOIN sets AS T3 ON T3.code = T2.setCode WHERE T3.name = 'Coldsnap' AND T1.language = 'Italian';"},
+        {"id" : 2, "sql statement" : "SELECT MAX(convertedManaCost) FROM foreign_data AS T1 INNER JOIN cards AS T2 ON T2.uuid = T1.uuid INNER JOIN sets AS T3 ON T3.code = T2.setCode WHERE T3.name = 'Coldsnap' AND T1.language = 'Italian';"},
+        {"id" : 3, "sql statement" : "SELECT T2.name FROM foreign_data AS T1 INNER JOIN cards AS T2 ON T2.uuid = T1.uuid INNER JOIN sets AS T3 ON T3.code = T2.setCode WHERE T3.name = 'Coldsnap' AND T1.language = 'Italian' AND T2.convertedManaCost = (SELECT MAX(convertedManaCost) FROM foreign_data AS T1 INNER JOIN cards AS T2 ON T2.uuid = T1.uuid INNER JOIN sets AS T3 ON T3.code = T2.setCode WHERE T3.name = 'Coldsnap' AND T1.language = 'Italian');"}
+    ],
+    "edges": [
+        {"source": 1, "target": 3},
+        {"source": 2, "target": 3}
+    ]
+}
+{
+    "nodes": [
+        {"id" : 1, "sql statement" : "SELECT MIN(originalReleaseDate) FROM cards WHERE rarity = 'mythic' AND originalReleaseDate IS NOT NULL;"},
+        {"id" : 2, "sql statement" : "SELECT MIN(originalReleaseDate) FROM cards AS T1 INNER JOIN legalities AS T2 ON T1.uuid = T2.uuid WHERE T1.rarity = 'mythic' AND T1.originalReleaseDate IS NOT NULL AND T2.status = 'Legal';"},
+        {"id" : 3, "sql statement" : "SELECT T1.originalReleaseDate, T2.format FROM cards AS T1 INNER JOIN legalities AS T2 ON T1.uuid = T2.uuid WHERE T1.rarity = 'mythic' AND T1.originalReleaseDate IS NOT NULL AND T2.status = 'Legal' AND T1.originalReleaseDate = (SELECT MIN(originalReleaseDate) FROM cards AS T1 INNER JOIN legalities AS T2 ON T1.uuid = T2.uuid WHERE T1.rarity = 'mythic' AND T1.originalReleaseDate IS NOT NULL AND T2.status = 'Legal');"}
+    ],
+    "edges": [
+        {"source": 1, "target": 2},
+        {"source": 2, "target": 3}
+    ]
+}
+
+{
+    "nodes": [
+        {"id" : 1, "sql statement" : "SELECT MAX(Reputation) FROM users;"},
+        {"id" : 2, "sql statement" : "SELECT T2.name FROM users AS T1 INNER JOIN badges AS T2 ON T1.Id = T2.UserId;"},
+        {"id" : 3, "sql statement" : "SELECT T2.name FROM users AS T1 INNER JOIN badges AS T2 ON T1.Id = T2.UserId WHERE T1.Reputation = (SELECT MAX(Reputation) FROM users);"}
+    ],
+    "edges": [
+        {"source": 1, "target": 3},
+        {"source": 2, "target": 3}
+    ]
+}
+
+{
+    "nodes": [
+        {"id" : 1, "sql statement" : "SELECT MIN(Reputation) FROM users;"},
+        {"id" : 2, "sql statement" : "SELECT T2.Name, T1.Reputation FROM users AS T1 INNER JOIN badges AS T2 ON T1.Id = T2.UserId;"},
+        {"id" : 3, "sql statement" : "SELECT T2.Name, T1.Reputation FROM users AS T1 INNER JOIN badges AS T2 ON T1.Id = T2.UserId WHERE T1.Reputation = (SELECT MIN(Reputation) FROM users);"}
+    ],
+    "edges": [
+        {"source": 1, "target": 3},
+        {"source": 2, "target": 3}
+    ]
+}
+
+{
+    "nodes": [
+        {"id" : 1, "sql statement" : "SELECT MAX(T4.CreationDate) FROM users AS T5 INNER JOIN posts AS T6 ON T5.Id = T6.OwnerUserId INNER JOIN comments AS T4 ON T6.Id = T4.PostId WHERE T6.Title = 'Analysing wind data with R';"},
+        {"id" : 2, "sql statement" : "SELECT T3.Text, T1.DisplayName FROM users AS T1 INNER JOIN posts AS T2 ON T1.Id = T2.OwnerUserId INNER JOIN comments AS T3 ON T2.Id = T3.PostId WHERE T2.Title = 'Analysing wind data with R';"},
+        {"id" : 3, "sql statement" : "SELECT T3.Text, T1.DisplayName FROM users AS T1 INNER JOIN posts AS T2 ON T1.Id = T2.OwnerUserId INNER JOIN comments AS T3 ON T2.Id = T3.PostId WHERE T2.Title = 'Analysing wind data with R' AND T3.CreationDate = (SELECT MAX(T4.CreationDate) FROM users AS T5 INNER JOIN posts AS T6 ON T5.Id = T6.OwnerUserId INNER JOIN comments AS T4 ON T6.Id = T4.PostId WHERE T6.Title = 'Analysing wind data with R');"}
+    ],
+    "edges": [
+        {"source": 1, "target": 3},
+        {"source": 2, "target": 3}
+    ]
+}

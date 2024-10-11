@@ -1,7 +1,7 @@
 import sqlite3
 
 # 连接到 SQLite 数据库
-conn = sqlite3.connect('../data/sds/univdb-sqlite.db')
+conn = sqlite3.connect('../data/chinook/chinook.db')
 
 # 获取游标对象
 cursor = conn.cursor()
