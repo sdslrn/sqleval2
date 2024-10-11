@@ -24,4 +24,9 @@ if __name__ == '__main__':
     # 待插入元组中只给出了模式中部分属性的值，那么其余属性将被赋空值，用null表示。
     # sql = "insert into student values ('3003', 'Green', 'Finance', null);"
 
+    sql = """INSERT INTO takes (ID, course_id, sec_id, semester, year)
+SELECT ID, 'CS-102', '1', 'Spring', 2024
+FROM takes
+WHERE course_id = 'CS-101' AND semester = 'Fall' AND year = 2023 AND grade = 'A';
+"""
     insert_operation(sql)
