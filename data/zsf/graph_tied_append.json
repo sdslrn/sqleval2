@@ -1,0 +1,650 @@
+[
+    {
+        "question_id": 37,
+        "db_id": "california_schools",
+        "question": "What is the complete address of the school with the lowest excellence rate? Indicate the Street, City, Zip and State.",
+        "evidence": "Execellence Rate = NumGE1500 / NumTstTakr; complete address has Street, City, Zip, State",
+        "SQL": "SELECT T2.Street, T2.City, T2.Zip, T2.State FROM schools AS T2 INNER JOIN (SELECT cds, CAST(NumGE1500 AS REAL) / NumTstTakr AS rate FROM satscores WHERE NumGE1500 IS NOT NULL AND NumTstTakr IS NOT NULL AND NumTstTakr != 0) AS T1 ON T2.CDSCode = T1.cds WHERE T1.rate = (SELECT MIN(CAST(NumGE1500 AS REAL) / NumTstTakr) AS min_rate FROM satscores WHERE NumGE1500 IS NOT NULL AND NumTstTakr IS NOT NULL AND NumTstTakr != 0) ORDER BY T2.CDSCode",
+        "difficulty": "moderate",
+        "graph": {
+            "nodes": [
+                {
+                    "id": 1,
+                    "sql statement": "SELECT cds, CAST(NumGE1500 AS REAL) / NumTstTakr AS rate FROM satscores WHERE NumGE1500 IS NOT NULL AND NumTstTakr IS NOT NULL AND NumTstTakr != 0",
+                    "exec_res": "success"
+                },
+                {
+                    "id": 2,
+                    "sql statement": "SELECT MIN(CAST(NumGE1500 AS REAL) / NumTstTakr) AS min_rate FROM satscores WHERE NumGE1500 IS NOT NULL AND NumTstTakr IS NOT NULL AND NumTstTakr != 0",
+                    "exec_res": "success"
+                },
+                {
+                    "id": 3,
+                    "sql statement": "SELECT T2.Street, T2.City, T2.Zip, T2.State FROM schools AS T2 INNER JOIN (SELECT cds, CAST(NumGE1500 AS REAL) / NumTstTakr AS rate FROM satscores WHERE NumGE1500 IS NOT NULL AND NumTstTakr IS NOT NULL AND NumTstTakr != 0) AS T1 ON T2.CDSCode = T1.cds WHERE T1.rate = (SELECT MIN(CAST(NumGE1500 AS REAL) / NumTstTakr) AS min_rate FROM satscores WHERE NumGE1500 IS NOT NULL AND NumTstTakr IS NOT NULL AND NumTstTakr != 0) ORDER BY T2.CDSCode",
+                    "exec_res": "success"
+                }
+            ],
+            "edges": [
+                {
+                    "source": 1,
+                    "target": 3
+                },
+                {
+                    "source": 2,
+                    "target": 3
+                }
+            ]
+        },
+        "final_check": true
+    },
+    {
+        "question_id": 68,
+        "db_id": "california_schools",
+        "question": "Which county reported the most number of school closure in the 1980s with school wonership code belonging to Youth Authority Facilities (CEA)?",
+        "evidence": "Youth Authority Facilities (CEA) refers to SOC = 11; 1980s = years between 1980 and 1989",
+        "SQL": "SELECT County FROM (SELECT County, COUNT(School) AS SchoolCount FROM schools WHERE strftime('%Y', ClosedDate) BETWEEN '1980' AND '1989' AND StatusType = 'Closed' AND SOC = 11 GROUP BY County) WHERE SchoolCount = (SELECT MAX(SchoolCount) FROM (SELECT COUNT(School) AS SchoolCount FROM schools WHERE strftime('%Y', ClosedDate) BETWEEN '1980' AND '1989' AND StatusType = 'Closed' AND SOC = 11 GROUP BY County))",
+        "difficulty": "moderate",
+        "graph": {
+            "nodes": [
+                {
+                    "id": 1,
+                    "sql statement": "SELECT County, COUNT(School) AS SchoolCount FROM schools WHERE strftime('%Y', ClosedDate) BETWEEN '1980' AND '1989' AND StatusType = 'Closed' AND SOC = 11 GROUP BY County",
+                    "exec_res": "success"
+                },
+                {
+                    "id": 2,
+                    "sql statement": "SELECT MAX(SchoolCount) FROM (SELECT COUNT(School) AS SchoolCount FROM schools WHERE strftime('%Y', ClosedDate) BETWEEN '1980' AND '1989' AND StatusType = 'Closed' AND SOC = 11 GROUP BY County)",
+                    "exec_res": "success"
+                },
+                {
+                    "id": 3,
+                    "sql statement": "SELECT County FROM (SELECT County, COUNT(School) AS SchoolCount FROM schools WHERE strftime('%Y', ClosedDate) BETWEEN '1980' AND '1989' AND StatusType = 'Closed' AND SOC = 11 GROUP BY County) WHERE SchoolCount = (SELECT MAX(SchoolCount) FROM (SELECT COUNT(School) AS SchoolCount FROM schools WHERE strftime('%Y', ClosedDate) BETWEEN '1980' AND '1989' AND StatusType = 'Closed' AND SOC = 11 GROUP BY County))",
+                    "exec_res": "success"
+                }
+            ],
+            "edges": [
+                {
+                    "source": 1,
+                    "target": 3
+                },
+                {
+                    "source": 2,
+                    "target": 3
+                }
+            ]
+        },
+        "final_check": true
+    },
+    {
+        "question_id": 81,
+        "db_id": "california_schools",
+        "question": "In which city can you find the school in the state of California with the lowest latitude coordinates and what is its lowest grade? Indicate the school name.",
+        "evidence": "State of California refers to state = 'CA'",
+        "SQL": "SELECT T2.City, T1.`Low Grade`, T1.`School Name` FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.State = 'CA' AND T2.Latitude IS NOT NULL AND T2.Latitude = (SELECT MIN(Latitude) FROM schools WHERE State = 'CA' AND Latitude IS NOT NULL)",
+        "difficulty": "moderate",
+        "graph": {
+            "nodes": [
+                {
+                    "id": 1,
+                    "sql statement": "SELECT MIN(Latitude) FROM schools WHERE State = 'CA' AND Latitude IS NOT NULL",
+                    "exec_res": "success"
+                },
+                {
+                    "id": 2,
+                    "sql statement": "SELECT T2.City, T1.`Low Grade`, T1.`School Name` FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.State = 'CA' AND T2.Latitude IS NOT NULL",
+                    "exec_res": "success"
+                },
+                {
+                    "id": 3,
+                    "sql statement": "SELECT T2.City, T1.`Low Grade`, T1.`School Name` FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.State = 'CA' AND T2.Latitude IS NOT NULL AND T2.Latitude = (SELECT MIN(Latitude) FROM schools WHERE State = 'CA' AND Latitude IS NOT NULL)",
+                    "exec_res": "success"
+                }
+            ],
+            "edges": [
+                {
+                    "source": 1,
+                    "target": 3
+                },
+                {
+                    "source": 2,
+                    "target": 3
+                }
+            ]
+        },
+        "final_check": true
+    },
+    {
+        "question_id": 189,
+        "db_id": "financial",
+        "question": "Name the account numbers of female clients who are oldest and have lowest average salary?",
+        "evidence": "Female refers to 'F' in the gender; A11 contains information about average salary",
+        "SQL": "SELECT T3.account_id FROM client AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id INNER JOIN account AS T3 ON T2.district_id = T3.district_id WHERE T1.gender = 'F' AND T1.birth_date = (SELECT MIN(birth_date) FROM client WHERE gender = 'F') AND T2.A11 = (SELECT MIN(T2.A11) FROM client AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id WHERE T1.gender = 'F' AND T1.birth_date = (SELECT MIN(birth_date) FROM client WHERE gender = 'F'))",
+        "difficulty": "moderate",
+        "graph": {
+            "nodes": [
+                {
+                    "id": 1,
+                    "sql statement": "SELECT MIN(birth_date) FROM client WHERE gender = 'F'",
+                    "exec_res": "success"
+                },
+                {
+                    "id": 2,
+                    "sql statement": "SELECT MIN(T2.A11) FROM client AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id WHERE T1.gender = 'F' AND T1.birth_date = (SELECT MIN(birth_date) FROM client WHERE gender = 'F')",
+                    "exec_res": "success"
+                },
+                {
+                    "id": 3,
+                    "sql statement": "SELECT T3.account_id FROM client AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id INNER JOIN account AS T3 ON T2.district_id = T3.district_id WHERE T1.gender = 'F' AND T1.birth_date = (SELECT MIN(birth_date) FROM client WHERE gender = 'F') AND T2.A11 = (SELECT MIN(T2.A11) FROM client AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id WHERE T1.gender = 'F' AND T1.birth_date = (SELECT MIN(birth_date) FROM client WHERE gender = 'F'))",
+                    "exec_res": "success"
+                }
+            ],
+            "edges": [
+                {
+                    "source": 1,
+                    "target": 3
+                },
+                {
+                    "source": 2,
+                    "target": 3
+                }
+            ]
+        },
+        "final_check": true
+    },
+    {
+        "question_id": 244,
+        "db_id": "toxicology",
+        "question": "Is the molecule with the most double bonds carcinogenic?",
+        "evidence": "double bond refers to bond_type = ' = '; label = '+' mean molecules are carcinogenic",
+        "SQL": "SELECT T1.label FROM molecule AS T1 INNER JOIN (SELECT T.molecule_id, COUNT(T.bond_type) AS bond_count FROM bond AS T WHERE T.bond_type = '=' GROUP BY T.molecule_id HAVING bond_count = (SELECT MAX(bond_count) FROM (SELECT molecule_id, COUNT(bond_type) AS bond_count FROM bond WHERE bond_type = '=' GROUP BY molecule_id) AS subquery) ORDER BY bond_count DESC) AS T2 ON T1.molecule_id = T2.molecule_id",
+        "difficulty": "moderate",
+        "graph": {
+            "nodes": [
+                {
+                    "id": 1,
+                    "sql statement": "SELECT molecule_id, COUNT(bond_type) AS bond_count FROM bond WHERE bond_type = '=' GROUP BY molecule_id",
+                    "exec_res": "success"
+                },
+                {
+                    "id": 2,
+                    "sql statement": "SELECT MAX(bond_count) FROM (SELECT molecule_id, COUNT(bond_type) AS bond_count FROM bond WHERE bond_type = '=' GROUP BY molecule_id) AS subquery",
+                    "exec_res": "success"
+                },
+                {
+                    "id": 3,
+                    "sql statement": "SELECT T.molecule_id, COUNT(T.bond_type) AS bond_count FROM bond AS T WHERE T.bond_type = '=' GROUP BY T.molecule_id HAVING bond_count = (SELECT MAX(bond_count) FROM (SELECT molecule_id, COUNT(bond_type) AS bond_count FROM bond WHERE bond_type = '=' GROUP BY molecule_id) AS subquery) ORDER BY bond_count DESC",
+                    "exec_res": "success"
+                },
+                {
+                    "id": 4,
+                    "sql statement": "SELECT T1.label FROM molecule AS T1 INNER JOIN (SELECT T.molecule_id, COUNT(T.bond_type) AS bond_count FROM bond AS T WHERE T.bond_type = '=' GROUP BY T.molecule_id HAVING bond_count = (SELECT MAX(bond_count) FROM (SELECT molecule_id, COUNT(bond_type) AS bond_count FROM bond WHERE bond_type = '=' GROUP BY molecule_id) AS subquery) ORDER BY bond_count DESC) AS T2 ON T1.molecule_id = T2.molecule_id",
+                    "exec_res": "success"
+                }
+            ],
+            "edges": [
+                {
+                    "source": 1,
+                    "target": 3
+                },
+                {
+                    "source": 2,
+                    "target": 3
+                },
+                {
+                    "source": 3,
+                    "target": 4
+                }
+            ]
+        },
+        "final_check": true
+    },
+    {
+        "question_id": 250,
+        "db_id": "toxicology",
+        "question": "Of all the carcinogenic molecules, which one has the most double bonds?",
+        "evidence": "label = '+' mean molecules are carcinogenic; double bond refers to bond_type = ' = ';",
+        "SQL": "SELECT T.molecule_id FROM (SELECT T3.molecule_id, COUNT(T1.bond_type) AS bond_count FROM bond AS T1 INNER JOIN molecule AS T3 ON T1.molecule_id = T3.molecule_id WHERE T3.label = '+' AND T1.bond_type = '=' GROUP BY T3.molecule_id HAVING bond_count = (SELECT MAX(bond_count) FROM (SELECT T3.molecule_id, COUNT(T1.bond_type) AS bond_count FROM bond AS T1 INNER JOIN molecule AS T3 ON T1.molecule_id = T3.molecule_id WHERE T3.label = '+' AND T1.bond_type = '=' GROUP BY T3.molecule_id) AS subquery) ORDER BY bond_count DESC) AS T",
+        "difficulty": "moderate",
+        "graph": {
+            "nodes": [
+                {
+                    "id": 1,
+                    "sql statement": "SELECT T3.molecule_id, COUNT(T1.bond_type) AS bond_count FROM bond AS T1 INNER JOIN molecule AS T3 ON T1.molecule_id = T3.molecule_id WHERE T3.label = '+' AND T1.bond_type = '=' GROUP BY T3.molecule_id",
+                    "exec_res": "success"
+                },
+                {
+                    "id": 2,
+                    "sql statement": "SELECT MAX(bond_count) FROM (SELECT T3.molecule_id, COUNT(T1.bond_type) AS bond_count FROM bond AS T1 INNER JOIN molecule AS T3 ON T1.molecule_id = T3.molecule_id WHERE T3.label = '+' AND T1.bond_type = '=' GROUP BY T3.molecule_id) AS subquery",
+                    "exec_res": "success"
+                },
+                {
+                    "id": 3,
+                    "sql statement": "SELECT T3.molecule_id, COUNT(T1.bond_type) AS bond_count FROM bond AS T1 INNER JOIN molecule AS T3 ON T1.molecule_id = T3.molecule_id WHERE T3.label = '+' AND T1.bond_type = '=' GROUP BY T3.molecule_id HAVING bond_count = (SELECT MAX(bond_count) FROM (SELECT T3.molecule_id, COUNT(T1.bond_type) AS bond_count FROM bond AS T1 INNER JOIN molecule AS T3 ON T1.molecule_id = T3.molecule_id WHERE T3.label = '+' AND T1.bond_type = '=' GROUP BY T3.molecule_id) AS subquery) ORDER BY bond_count DESC",
+                    "exec_res": "success"
+                },
+                {
+                    "id": 4,
+                    "sql statement": "SELECT T.molecule_id FROM (SELECT T3.molecule_id, COUNT(T1.bond_type) AS bond_count FROM bond AS T1 INNER JOIN molecule AS T3 ON T1.molecule_id = T3.molecule_id WHERE T3.label = '+' AND T1.bond_type = '=' GROUP BY T3.molecule_id HAVING bond_count = (SELECT MAX(bond_count) FROM (SELECT T3.molecule_id, COUNT(T1.bond_type) AS bond_count FROM bond AS T1 INNER JOIN molecule AS T3 ON T1.molecule_id = T3.molecule_id WHERE T3.label = '+' AND T1.bond_type = '=' GROUP BY T3.molecule_id) AS subquery) ORDER BY bond_count DESC) AS T",
+                    "exec_res": "success"
+                }
+            ],
+            "edges": [
+                {
+                    "source": 1,
+                    "target": 3
+                },
+                {
+                    "source": 2,
+                    "target": 3
+                },
+                {
+                    "source": 3,
+                    "target": 4
+                }
+            ]
+        },
+        "final_check": true
+    },
+    {
+        "question_id": 432,
+        "db_id": "card_games",
+        "question": "Which Russian set of cards contains the most cards overall?",
+        "evidence": "Russian refers to language = 'Russian'; contains the most cards overall refers to MAX(baseSetSize)",
+        "SQL": "SELECT T1.id FROM sets AS T1 INNER JOIN set_translations AS T2 ON T1.code = T2.setCode WHERE T2.language = 'Russian' GROUP BY T1.baseSetSize HAVING COUNT(T1.id) = (SELECT MAX(card_count) FROM (SELECT COUNT(T1.id) AS card_count FROM sets AS T1 INNER JOIN set_translations AS T2 ON T1.code = T2.setCode WHERE T2.language = 'Russian' GROUP BY T1.baseSetSize) AS subquery)",
+        "difficulty": "moderate",
+        "graph": {
+            "nodes": [
+                {
+                    "id": 1,
+                    "sql statement": "SELECT COUNT(T1.id) AS card_count FROM sets AS T1 INNER JOIN set_translations AS T2 ON T1.code = T2.setCode WHERE T2.language = 'Russian' GROUP BY T1.baseSetSize",
+                    "exec_res": "success"
+                },
+                {
+                    "id": 2,
+                    "sql statement": "SELECT MAX(card_count) FROM (SELECT COUNT(T1.id) AS card_count FROM sets AS T1 INNER JOIN set_translations AS T2 ON T1.code = T2.setCode WHERE T2.language = 'Russian' GROUP BY T1.baseSetSize) AS subquery",
+                    "exec_res": "success"
+                },
+                {
+                    "id": 3,
+                    "sql statement": "SELECT T1.id FROM sets AS T1 INNER JOIN set_translations AS T2 ON T1.code = T2.setCode WHERE T2.language = 'Russian' GROUP BY T1.baseSetSize HAVING COUNT(T1.id) = (SELECT MAX(card_count) FROM (SELECT COUNT(T1.id) AS card_count FROM sets AS T1 INNER JOIN set_translations AS T2 ON T1.code = T2.setCode WHERE T2.language = 'Russian' GROUP BY T1.baseSetSize) AS subquery)",
+                    "exec_res": "success"
+                }
+            ],
+            "edges": [
+                {
+                    "source": 1,
+                    "target": 2
+                },
+                {
+                    "source": 2,
+                    "target": 3
+                }
+            ]
+        },
+        "final_check": true
+    },
+    {
+        "question_id": 484,
+        "db_id": "card_games",
+        "question": "Please list the Italian names of the cards in the set Coldsnap with the highest converted mana cost.",
+        "evidence": "card set Coldsnap refers to name = 'Coldsnap'; Italian refers to language = 'Italian'",
+        "SQL": "SELECT T2.name FROM foreign_data AS T1 INNER JOIN cards AS T2 ON T2.uuid = T1.uuid INNER JOIN sets AS T3 ON T3.code = T2.setCode WHERE T3.name = 'Coldsnap' AND T1.language = 'Italian' AND T2.convertedManaCost = (SELECT MAX(convertedManaCost) FROM foreign_data AS T1 INNER JOIN cards AS T2 ON T2.uuid = T1.uuid INNER JOIN sets AS T3 ON T3.code = T2.setCode WHERE T3.name = 'Coldsnap' AND T1.language = 'Italian')",
+        "difficulty": "moderate",
+        "graph": {
+            "nodes": [
+                {
+                    "id": 1,
+                    "sql statement": "SELECT MAX(convertedManaCost) FROM foreign_data AS T1 INNER JOIN cards AS T2 ON T2.uuid = T1.uuid INNER JOIN sets AS T3 ON T3.code = T2.setCode WHERE T3.name = 'Coldsnap' AND T1.language = 'Italian'",
+                    "exec_res": "success"
+                },
+                {
+                    "id": 2,
+                    "sql statement": "SELECT T2.name FROM foreign_data AS T1 INNER JOIN cards AS T2 ON T2.uuid = T1.uuid INNER JOIN sets AS T3 ON T3.code = T2.setCode WHERE T3.name = 'Coldsnap' AND T1.language = 'Italian' AND T2.convertedManaCost = (SELECT MAX(convertedManaCost) FROM foreign_data AS T1 INNER JOIN cards AS T2 ON T2.uuid = T1.uuid INNER JOIN sets AS T3 ON T3.code = T2.setCode WHERE T3.name = 'Coldsnap' AND T1.language = 'Italian')",
+                    "exec_res": "success"
+                }
+            ],
+            "edges": [
+                {
+                    "source": 1,
+                    "target": 2
+                }
+            ]
+        },
+        "final_check": true
+    },
+    {
+        "question_id": 515,
+        "db_id": "card_games",
+        "question": "When was the oldest mythic card released and what are its legal play formats?",
+        "evidence": "the oldest card refers to MIN(originalReleaseDate); mythic card refers to rarity = 'mythic'; legal play refers to status = 'legal'; play format refers to format",
+        "SQL": "SELECT T1.originalReleaseDate, T2.format FROM cards AS T1 INNER JOIN legalities AS T2 ON T1.uuid = T2.uuid WHERE T1.rarity = 'mythic' AND T1.originalReleaseDate IS NOT NULL AND T2.status = 'Legal' AND T1.originalReleaseDate = (SELECT MIN(originalReleaseDate) FROM cards AS T1 INNER JOIN legalities AS T2 ON T1.uuid = T2.uuid WHERE T1.rarity = 'mythic' AND T1.originalReleaseDate IS NOT NULL AND T2.status = 'Legal')",
+        "difficulty": "moderate",
+        "graph": {
+            "nodes": [
+                {
+                    "id": 1,
+                    "sql statement": "SELECT MIN(originalReleaseDate) FROM cards AS T1 INNER JOIN legalities AS T2 ON T1.uuid = T2.uuid WHERE T1.rarity = 'mythic' AND T1.originalReleaseDate IS NOT NULL AND T2.status = 'Legal'",
+                    "exec_res": "success"
+                },
+                {
+                    "id": 2,
+                    "sql statement": "SELECT T1.originalReleaseDate, T2.format FROM cards AS T1 INNER JOIN legalities AS T2 ON T1.uuid = T2.uuid WHERE T1.rarity = 'mythic' AND T1.originalReleaseDate IS NOT NULL AND T2.status = 'Legal' AND T1.originalReleaseDate = (SELECT MIN(originalReleaseDate) FROM cards AS T1 INNER JOIN legalities AS T2 ON T1.uuid = T2.uuid WHERE T1.rarity = 'mythic' AND T1.originalReleaseDate IS NOT NULL AND T2.status = 'Legal')",
+                    "exec_res": "success"
+                }
+            ],
+            "edges": [
+                {
+                    "source": 1,
+                    "target": 2
+                }
+            ]
+        },
+        "final_check": true
+    },
+    {
+        "question_id": 694,
+        "db_id": "codebase_community",
+        "question": "Provide the text of the latest comment to the post with the title 'Analysing wind data with R' and the display name of the user who left it.",
+        "evidence": "the latest comment refers to MAX(CreationDate);",
+        "SQL": "SELECT T3.Text, T1.DisplayName FROM users AS T1 INNER JOIN posts AS T2 ON T1.Id = T2.OwnerUserId INNER JOIN comments AS T3 ON T2.Id = T3.PostId WHERE T2.Title = 'Analysing wind data with R' AND T3.CreationDate = (SELECT MAX(T4.CreationDate) FROM users AS T5 INNER JOIN posts AS T6 ON T5.Id = T6.OwnerUserId INNER JOIN comments AS T4 ON T6.Id = T4.PostId WHERE T6.Title = 'Analysing wind data with R')",
+        "difficulty": "moderate",
+        "graph": {
+            "nodes": [
+                {
+                    "id": 1,
+                    "sql statement": "SELECT MAX(T4.CreationDate) FROM users AS T5 INNER JOIN posts AS T6 ON T5.Id = T6.OwnerUserId INNER JOIN comments AS T4 ON T6.Id = T4.PostId WHERE T6.Title = 'Analysing wind data with R'",
+                    "exec_res": "success"
+                },
+                {
+                    "id": 2,
+                    "sql statement": "SELECT T3.Text, T1.DisplayName FROM users AS T1 INNER JOIN posts AS T2 ON T1.Id = T2.OwnerUserId INNER JOIN comments AS T3 ON T2.Id = T3.PostId WHERE T2.Title = 'Analysing wind data with R' AND T3.CreationDate = (SELECT MAX(T4.CreationDate) FROM users AS T5 INNER JOIN posts AS T6 ON T5.Id = T6.OwnerUserId INNER JOIN comments AS T4 ON T6.Id = T4.PostId WHERE T6.Title = 'Analysing wind data with R')",
+                    "exec_res": "success"
+                }
+            ],
+            "edges": [
+                {
+                    "source": 1,
+                    "target": 2
+                }
+            ]
+        },
+        "final_check": true
+    },
+    {
+        "question_id": 736,
+        "db_id": "superhero",
+        "question": "Who is the dumbest superhero?",
+        "evidence": "the dumbest superhero refers to MIN(attribute_value) where attribute_name = 'Intelligence'",
+        "SQL": "SELECT T1.superhero_name FROM superhero AS T1 INNER JOIN hero_attribute AS T2 ON T1.id = T2.hero_id INNER JOIN attribute AS T3 ON T2.attribute_id = T3.id WHERE T3.attribute_name = 'Intelligence' AND T2.attribute_value = (SELECT MIN(T4.attribute_value) FROM hero_attribute AS T4 INNER JOIN attribute AS T5 ON T4.attribute_id = T5.id WHERE T5.attribute_name = 'Intelligence')",
+        "difficulty": "moderate",
+        "graph": {
+            "nodes": [
+                {
+                    "id": 1,
+                    "sql statement": "SELECT MIN(T4.attribute_value) FROM hero_attribute AS T4 INNER JOIN attribute AS T5 ON T4.attribute_id = T5.id WHERE T5.attribute_name = 'Intelligence'",
+                    "exec_res": "success"
+                },
+                {
+                    "id": 2,
+                    "sql statement": "SELECT T1.superhero_name FROM superhero AS T1 INNER JOIN hero_attribute AS T2 ON T1.id = T2.hero_id INNER JOIN attribute AS T3 ON T2.attribute_id = T3.id WHERE T3.attribute_name = 'Intelligence'",
+                    "exec_res": "success"
+                },
+                {
+                    "id": 3,
+                    "sql statement": "SELECT T1.superhero_name FROM superhero AS T1 INNER JOIN hero_attribute AS T2 ON T1.id = T2.hero_id INNER JOIN attribute AS T3 ON T2.attribute_id = T3.id WHERE T3.attribute_name = 'Intelligence' AND T2.attribute_value = (SELECT MIN(T4.attribute_value) FROM hero_attribute AS T4 INNER JOIN attribute AS T5 ON T4.attribute_id = T5.id WHERE T5.attribute_name = 'Intelligence')",
+                    "exec_res": "success"
+                }
+            ],
+            "edges": [
+                {
+                    "source": 1,
+                    "target": 3
+                },
+                {
+                    "source": 2,
+                    "target": 3
+                }
+            ]
+        },
+        "final_check": true
+    },
+    {
+        "question_id": 766,
+        "db_id": "superhero",
+        "question": "What is the hero's full name with the highest attribute in strength?",
+        "evidence": "highest attribute in strength refers to MAX(attribute_value) WHERE attribute_name = 'strength';",
+        "SQL": "SELECT T1.full_name FROM superhero AS T1 INNER JOIN hero_attribute AS T2 ON T1.id = T2.hero_id INNER JOIN attribute AS T3 ON T2.attribute_id = T3.id WHERE T3.attribute_name = 'Strength' AND T2.attribute_value = (SELECT MAX(T4.attribute_value) FROM hero_attribute AS T4 INNER JOIN attribute AS T5 ON T4.attribute_id = T5.id WHERE T5.attribute_name = 'Strength')",
+        "difficulty": "moderate",
+        "graph": {
+            "nodes": [
+                {
+                    "id": 1,
+                    "sql statement": "SELECT MAX(T4.attribute_value) FROM hero_attribute AS T4 INNER JOIN attribute AS T5 ON T4.attribute_id = T5.id WHERE T5.attribute_name = 'Strength'",
+                    "exec_res": "success"
+                },
+                {
+                    "id": 2,
+                    "sql statement": "SELECT T1.full_name FROM superhero AS T1 INNER JOIN hero_attribute AS T2 ON T1.id = T2.hero_id INNER JOIN attribute AS T3 ON T2.attribute_id = T3.id WHERE T3.attribute_name = 'Strength'",
+                    "exec_res": "success"
+                },
+                {
+                    "id": 3,
+                    "sql statement": "SELECT T1.full_name FROM superhero AS T1 INNER JOIN hero_attribute AS T2 ON T1.id = T2.hero_id INNER JOIN attribute AS T3 ON T2.attribute_id = T3.id WHERE T3.attribute_name = 'Strength' AND T2.attribute_value = (SELECT MAX(T4.attribute_value) FROM hero_attribute AS T4 INNER JOIN attribute AS T5 ON T4.attribute_id = T5.id WHERE T5.attribute_name = 'Strength')",
+                    "exec_res": "success"
+                }
+            ],
+            "edges": [
+                {
+                    "source": 1,
+                    "target": 3
+                },
+                {
+                    "source": 2,
+                    "target": 3
+                }
+            ]
+        },
+        "final_check": true
+    },
+    {
+        "question_id": 769,
+        "db_id": "superhero",
+        "question": "Which superhero has the most durability published by Dark Horse Comics?",
+        "evidence": "which superhero refers to superhero_name; most durability refers to MAX(attribute_value) WHERE attribute_name = 'durability'; published by Dark Horse Comics refers to publisher_name = 'Dark Horse Comics';",
+        "SQL": "SELECT T1.superhero_name FROM superhero AS T1 INNER JOIN hero_attribute AS T2 ON T1.id = T2.hero_id INNER JOIN attribute AS T3 ON T3.id = T2.attribute_id INNER JOIN publisher AS T4 ON T4.id = T1.publisher_id WHERE T4.publisher_name = 'Dark Horse Comics' AND T2.attribute_value = (SELECT MAX(T5.attribute_value) FROM superhero AS T6 INNER JOIN hero_attribute AS T5 ON T6.id = T5.hero_id INNER JOIN publisher AS T7 ON T7.id = T6.publisher_id WHERE T7.publisher_name = 'Dark Horse Comics')",
+        "difficulty": "challenging",
+        "graph": {
+            "nodes": [
+                {
+                    "id": 1,
+                    "sql statement": "SELECT MAX(T5.attribute_value) FROM superhero AS T6 INNER JOIN hero_attribute AS T5 ON T6.id = T5.hero_id INNER JOIN publisher AS T7 ON T7.id = T6.publisher_id WHERE T7.publisher_name = 'Dark Horse Comics'",
+                    "exec_res": "success"
+                },
+                {
+                    "id": 2,
+                    "sql statement": "SELECT T1.superhero_name FROM superhero AS T1 INNER JOIN hero_attribute AS T2 ON T1.id = T2.hero_id INNER JOIN attribute AS T3 ON T3.id = T2.attribute_id INNER JOIN publisher AS T4 ON T4.id = T1.publisher_id WHERE T4.publisher_name = 'Dark Horse Comics' AND T2.attribute_value = (SELECT MAX(T5.attribute_value) FROM superhero AS T6 INNER JOIN hero_attribute AS T5 ON T6.id = T5.hero_id INNER JOIN publisher AS T7 ON T7.id = T6.publisher_id WHERE T7.publisher_name = 'Dark Horse Comics')",
+                    "exec_res": "success"
+                }
+            ],
+            "edges": [
+                {
+                    "source": 1,
+                    "target": 2
+                }
+            ]
+        },
+        "final_check": true
+    },
+    {
+        "question_id": 906,
+        "db_id": "formula_1",
+        "question": "Which was Lewis Hamilton first race? What was his points recorded for his first race event?",
+        "evidence": "first race refers to min(Year)",
+        "SQL": "SELECT T1.name, T2.points FROM races AS T1 INNER JOIN driverStandings AS T2 ON T2.raceId = T1.raceId INNER JOIN drivers AS T3 ON T3.driverId = T2.driverId WHERE T3.forename = 'Lewis' AND T3.surname = 'Hamilton' AND T1.year = (SELECT MIN(T4.year) FROM races AS T4 INNER JOIN driverStandings AS T5 ON T5.raceId = T4.raceId INNER JOIN drivers AS T6 ON T6.driverId = T5.driverId WHERE T6.forename = 'Lewis' AND T6.surname = 'Hamilton')",
+        "difficulty": "moderate",
+        "graph": {
+            "nodes": [
+                {
+                    "id": 1,
+                    "sql statement": "SELECT MIN(T4.year) FROM races AS T4 INNER JOIN driverStandings AS T5 ON T5.raceId = T4.raceId INNER JOIN drivers AS T6 ON T6.driverId = T5.driverId WHERE T6.forename = 'Lewis' AND T6.surname = 'Hamilton'",
+                    "exec_res": "success"
+                },
+                {
+                    "id": 2,
+                    "sql statement": "SELECT T1.name, T2.points FROM races AS T1 INNER JOIN driverStandings AS T2 ON T2.raceId = T1.raceId INNER JOIN drivers AS T3 ON T3.driverId = T2.driverId WHERE T3.forename = 'Lewis' AND T3.surname = 'Hamilton'",
+                    "exec_res": "success"
+                },
+                {
+                    "id": 3,
+                    "sql statement": "SELECT T1.name, T2.points FROM races AS T1 INNER JOIN driverStandings AS T2 ON T2.raceId = T1.raceId INNER JOIN drivers AS T3 ON T3.driverId = T2.driverId WHERE T3.forename = 'Lewis' AND T3.surname = 'Hamilton' AND T1.year = (SELECT MIN(T4.year) FROM races AS T4 INNER JOIN driverStandings AS T5 ON T5.raceId = T4.raceId INNER JOIN drivers AS T6 ON T6.driverId = T5.driverId WHERE T6.forename = 'Lewis' AND T6.surname = 'Hamilton')",
+                    "exec_res": "success"
+                }
+            ],
+            "edges": [
+                {
+                    "source": 1,
+                    "target": 3
+                },
+                {
+                    "source": 2,
+                    "target": 3
+                }
+            ]
+        },
+        "final_check": true
+    },
+    {
+        "question_id": 1026,
+        "db_id": "european_football_2",
+        "question": "Which home team had lost the fewest matches in the 2016 season?",
+        "evidence": "home team lost the matches refers to SUBTRACT(home_team_goal, away_team_goal) < 0; 2016 season refers to season = '2015/2016';",
+        "SQL": "SELECT t3.team_long_name FROM Match AS t1 INNER JOIN Team AS t3 ON t1.home_team_api_id = t3.team_api_id WHERE t1.season = '2015/2016' AND t1.home_team_goal - t1.away_team_goal < 0 GROUP BY t1.home_team_api_id HAVING COUNT(*) = (SELECT MIN(lost_matches_count) FROM (SELECT home_team_api_id, COUNT(*) AS lost_matches_count FROM Match WHERE season = '2015/2016' AND home_team_goal - away_team_goal < 0 GROUP BY home_team_api_id))",
+        "difficulty": "moderate",
+        "graph": {
+            "nodes": [
+                {
+                    "id": 1,
+                    "sql statement": "SELECT home_team_api_id, COUNT(*) AS lost_matches_count FROM Match WHERE season = '2015/2016' AND home_team_goal - away_team_goal < 0 GROUP BY home_team_api_id",
+                    "exec_res": "success"
+                },
+                {
+                    "id": 2,
+                    "sql statement": "SELECT MIN(lost_matches_count) FROM (SELECT home_team_api_id, COUNT(*) AS lost_matches_count FROM Match WHERE season = '2015/2016' AND home_team_goal - away_team_goal < 0 GROUP BY home_team_api_id)",
+                    "exec_res": "success"
+                },
+                {
+                    "id": 3,
+                    "sql statement": "SELECT t3.team_long_name FROM Match AS t1 INNER JOIN Team AS t3 ON t1.home_team_api_id = t3.team_api_id WHERE t1.season = '2015/2016' AND t1.home_team_goal - t1.away_team_goal < 0 GROUP BY t1.home_team_api_id HAVING COUNT(*) = (SELECT MIN(lost_matches_count) FROM (SELECT home_team_api_id, COUNT(*) AS lost_matches_count FROM Match WHERE season = '2015/2016' AND home_team_goal - away_team_goal < 0 GROUP BY home_team_api_id))",
+                    "exec_res": "success"
+                }
+            ],
+            "edges": [
+                {
+                    "source": 1,
+                    "target": 2
+                },
+                {
+                    "source": 2,
+                    "target": 3
+                }
+            ]
+        },
+        "final_check": true
+    },
+    {
+        "question_id": 1028,
+        "db_id": "european_football_2",
+        "question": "In Scotland Premier League, which away team won the most during the 2010 season?",
+        "evidence": "Scotland Premier League refers to League.name = 'Scotland Premier League'; away team refers to away_team_api_id; away team that won the most refers to MAX(SUBTRACT(away_team_goal, home_team_goal) > 0); 2010 season refers to season = '2009/2010';",
+        "SQL": "SELECT t3.team_long_name FROM League AS t1 INNER JOIN Match AS t2 ON t1.id = t2.league_id INNER JOIN Team AS t3 ON t2.away_team_api_id = t3.team_api_id WHERE t1.name = 'Scotland Premier League' AND t2.season = '2009/2010' AND t2.away_team_goal - t2.home_team_goal > 0 GROUP BY t2.away_team_api_id HAVING COUNT(*) = (SELECT MAX(won_matches_count) FROM (SELECT away_team_api_id, COUNT(*) AS won_matches_count FROM Match AS m INNER JOIN League AS l ON m.league_id = l.id WHERE l.name = 'Scotland Premier League' AND m.season = '2009/2010' AND m.away_team_goal - m.home_team_goal > 0 GROUP BY m.away_team_api_id))",
+        "difficulty": "challenging",
+        "graph": {
+            "nodes": [
+                {
+                    "id": 1,
+                    "sql statement": "SELECT away_team_api_id, COUNT(*) AS won_matches_count FROM Match AS m INNER JOIN League AS l ON m.league_id = l.id WHERE l.name = 'Scotland Premier League' AND m.season = '2009/2010' AND m.away_team_goal - m.home_team_goal > 0 GROUP BY m.away_team_api_id",
+                    "exec_res": "success"
+                },
+                {
+                    "id": 2,
+                    "sql statement": "SELECT MAX(won_matches_count) FROM (SELECT away_team_api_id, COUNT(*) AS won_matches_count FROM Match AS m INNER JOIN League AS l ON m.league_id = l.id WHERE l.name = 'Scotland Premier League' AND m.season = '2009/2010' AND m.away_team_goal - m.home_team_goal > 0 GROUP BY m.away_team_api_id)",
+                    "exec_res": "success"
+                },
+                {
+                    "id": 3,
+                    "sql statement": "SELECT t3.team_long_name FROM League AS t1 INNER JOIN Match AS t2 ON t1.id = t2.league_id INNER JOIN Team AS t3 ON t2.away_team_api_id = t3.team_api_id WHERE t1.name = 'Scotland Premier League' AND t2.season = '2009/2010' AND t2.away_team_goal - t2.home_team_goal > 0 GROUP BY t2.away_team_api_id HAVING COUNT(*) = (SELECT MAX(won_matches_count) FROM (SELECT away_team_api_id, COUNT(*) AS won_matches_count FROM Match AS m INNER JOIN League AS l ON m.league_id = l.id WHERE l.name = 'Scotland Premier League' AND m.season = '2009/2010' AND m.away_team_goal - m.home_team_goal > 0 GROUP BY m.away_team_api_id))",
+                    "exec_res": "success"
+                }
+            ],
+            "edges": [
+                {
+                    "source": 1,
+                    "target": 2
+                },
+                {
+                    "source": 2,
+                    "target": 3
+                }
+            ]
+        },
+        "final_check": true
+    },
+    {
+        "question_id": 1284,
+        "db_id": "thrombosis_prediction",
+        "question": "For the patient with the highest lactate dehydrogenase in the normal range, when was his or her data first recorded?",
+        "evidence": "highest lactate dehydrogenase in the normal range refers to MAX(LDH < 500); when the data first recorded refers to MIN(First Date);",
+        "SQL": "SELECT T1.`First Date` FROM Patient AS T1 INNER JOIN Laboratory AS T2 ON T1.ID = T2.ID WHERE T2.LDH = (SELECT MAX(LDH) FROM Laboratory WHERE LDH < 500)",
+        "difficulty": "moderate",
+        "graph": {
+            "nodes": [
+                {
+                    "id": 1,
+                    "sql statement": "SELECT MAX(LDH) FROM Laboratory WHERE LDH < 500",
+                    "exec_res": "success"
+                },
+                {
+                    "id": 2,
+                    "sql statement": "SELECT T1.`First Date` FROM Patient AS T1 INNER JOIN Laboratory AS T2 ON T1.ID = T2.ID WHERE T2.LDH = (SELECT MAX(LDH) FROM Laboratory WHERE LDH < 500)",
+                    "exec_res": "success"
+                }
+            ],
+            "edges": [
+                {
+                    "source": 1,
+                    "target": 2
+                }
+            ]
+        },
+        "final_check": true
+    },
+    {
+        "question_id": 1388,
+        "db_id": "student_club",
+        "question": "Which students manage to generate the highest income. State his/her full name along with the income source.",
+        "evidence": "name of students means the full name; full name refers to first_name, last_name; generate the highest income refers to MAX(income.amount);",
+        "SQL": "SELECT T1.first_name, T1.last_name, T2.source FROM member AS T1 INNER JOIN income AS T2 ON T1.member_id = T2.link_to_member WHERE T2.amount = (SELECT MAX(T4.amount) FROM member AS T3 INNER JOIN income AS T4 ON T3.member_id = T4.link_to_member)",
+        "difficulty": "moderate",
+        "graph": {
+            "nodes": [
+                {
+                    "id": 1,
+                    "sql statement": "SELECT MAX(T4.amount) FROM member AS T3 INNER JOIN income AS T4 ON T3.member_id = T4.link_to_member",
+                    "exec_res": "success"
+                },
+                {
+                    "id": 2,
+                    "sql statement": "SELECT T1.first_name, T1.last_name, T2.source FROM member AS T1 INNER JOIN income AS T2 ON T1.member_id = T2.link_to_member WHERE T2.amount = (SELECT MAX(T4.amount) FROM member AS T3 INNER JOIN income AS T4 ON T3.member_id = T4.link_to_member)",
+                    "exec_res": "success"
+                }
+            ],
+            "edges": [
+                {
+                    "source": 1,
+                    "target": 2
+                }
+            ]
+        },
+        "final_check": true
+    }
+]

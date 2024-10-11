@@ -1,0 +1,244 @@
+[
+    {
+        "question_id": 1,
+        "db_id": "california_schools",
+        "question": "Please list the lowest three eligible free rates for students aged 5-17 in continuation schools.",
+        "evidence": "Eligible free rates for students aged 5-17 = `Free Meal Count (Ages 5-17)` / `Enrollment (Ages 5-17)`",
+        "SQL": "SELECT `Free Meal Count (Ages 5-17)` / `Enrollment (Ages 5-17)` FROM frpm WHERE `Educational Option Type` = 'Continuation School' AND `Free Meal Count (Ages 5-17)` / `Enrollment (Ages 5-17)` IS NOT NULL ORDER BY `Free Meal Count (Ages 5-17)` / `Enrollment (Ages 5-17)` ASC LIMIT 3",
+        "difficulty": "moderate",
+        "graph": [
+            "```json\n{\n    \"nodes\": [\n        {\"id\": 1, \"sql statement\": \"SELECT `Free Meal Count (Ages 5-17)` / `Enrollment (Ages 5-17)` FROM frpm;\"},\n        {\"id\": 2, \"sql statement\": \"SELECT `Free Meal Count (Ages 5-17)` / `Enrollment (Ages 5-17)` FROM frpm WHERE `Educational Option Type` = 'Continuation School';\"},\n        {\"id\": 3, \"sql statement\": \"SELECT `Free Meal Count (Ages 5-17)` / `Enrollment (Ages 5-17)` FROM frpm WHERE `Educational Option Type` = 'Continuation School' AND `Free Meal Count (Ages 5-17)` / `Enrollment (Ages 5-17)` IS NOT NULL;\"},\n        {\"id\": 4, \"sql statement\": \"SELECT `Free Meal Count (Ages 5-17)` / `Enrollment (Ages 5-17)` FROM frpm WHERE `Educational Option Type` = 'Continuation School' AND `Free Meal Count (Ages 5-17)` / `Enrollment (Ages 5-17)` IS NOT NULL ORDER BY `Free Meal Count (Ages 5-17)` / `Enrollment (Ages 5-17)` ASC LIMIT 3;\"}\n    ],\n    \"edges\": [\n        {\"source\": 1, \"target\": 2},\n        {\"source\": 2, \"target\": 3},\n        {\"source\": 3, \"target\": 4}\n    ]\n}\n```"
+        ]
+    },
+    {
+        "question_id": 4,
+        "db_id": "california_schools",
+        "question": "Please list the phone numbers of the direct charter-funded schools that are opened after 2000/1/1.",
+        "evidence": "Charter schools refers to `Charter School (Y/N)` = 1 in the frpm",
+        "SQL": "SELECT T2.Phone FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T1.`Charter Funding Type` = 'Directly funded' AND T1.`Charter School (Y/N)` = 1 AND T2.OpenDate > '2000-01-01'",
+        "difficulty": "moderate",
+        "graph": [
+            "```json\n{\n    \"nodes\": [\n        {\"id\" : 1, \"sql statement\" : \"SELECT T2.Phone FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode;\"},\n        {\"id\" : 2, \"sql statement\" : \"SELECT T2.Phone FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T1.`Charter Funding Type` = 'Directly funded';\"},\n        {\"id\" : 3, \"sql statement\" : \"SELECT T2.Phone FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T1.`Charter Funding Type` = 'Directly funded' AND T1.`Charter School (Y/N)` = 1;\"},\n        {\"id\" : 4, \"sql statement\" : \"SELECT T2.Phone FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T1.`Charter Funding Type` = 'Directly funded' AND T1.`Charter School (Y/N)` = 1 AND T2.OpenDate > '2000-01-01';\"}\n    ],\n    \"edges\": [\n        {\"source\": 1, \"target\": 2},\n        {\"source\": 2, \"target\": 3},\n        {\"source\": 3, \"target\": 4}\n    ]\n}\n```"
+        ]
+    },
+    {
+        "question_id": 12,
+        "db_id": "california_schools",
+        "question": "Among the schools with an SAT excellence rate of over 0.3, what is the highest eligible free rate for students aged 5-17?",
+        "evidence": "Excellence rate = NumGE1500 / NumTstTakr; Eligible free rates for students aged 5-17 = `Free Meal Count (Ages 5-17)` / `Enrollment (Ages 5-17)`",
+        "SQL": "SELECT MAX(CAST(T1.`Free Meal Count (Ages 5-17)` AS REAL) / T1.`Enrollment (Ages 5-17)`) FROM frpm AS T1 INNER JOIN satscores AS T2 ON T1.CDSCode = T2.cds WHERE CAST(T2.NumGE1500 AS REAL) / T2.NumTstTakr > 0.3",
+        "difficulty": "moderate",
+        "graph": [
+            "```json\n{\n    \"nodes\": [\n        {\"id\" : 1, \"sql statement\" : \"SELECT MAX(CAST(T1.`Free Meal Count (Ages 5-17)` AS REAL) / T1.`Enrollment (Ages 5-17)`) FROM frpm AS T1;\"},\n        {\"id\" : 2, \"sql statement\" : \"SELECT MAX(CAST(T1.`Free Meal Count (Ages 5-17)` AS REAL) / T1.`Enrollment (Ages 5-17)`) FROM frpm AS T1 INNER JOIN satscores AS T2 ON T1.CDSCode = T2.cds;\"},\n        {\"id\" : 3, \"sql statement\" : \"SELECT MAX(CAST(T1.`Free Meal Count (Ages 5-17)` AS REAL) / T1.`Enrollment (Ages 5-17)`) FROM frpm AS T1 INNER JOIN satscores AS T2 ON T1.CDSCode = T2.cds WHERE CAST(T2.NumGE1500 AS REAL) / T2.NumTstTakr > 0.3;\"}\n    ],\n    \"edges\": [\n        {\"source\": 1, \"target\": 2},\n        {\"source\": 2, \"target\": 3}\n    ]\n}\n```"
+        ]
+    },
+    {
+        "question_id": 23,
+        "db_id": "california_schools",
+        "question": "List the names of schools with more than 30 difference in enrollements between K-12 and ages 5-17? Please also give the full street adress of the schools.",
+        "evidence": "Diffrence in enrollement = `Enrollment (K-12)` - `Enrollment (Ages 5-17)`",
+        "SQL": "SELECT T1.School, T1.Street FROM schools AS T1 INNER JOIN frpm AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.`Enrollment (K-12)` - T2.`Enrollment (Ages 5-17)` > 30",
+        "difficulty": "moderate",
+        "graph": [
+            "```json\n{\n    \"nodes\": [\n        {\"id\" : 1, \"sql statement\" : \"SELECT T1.School, T1.Street FROM schools AS T1;\"},\n        {\"id\" : 2, \"sql statement\" : \"SELECT T1.School, T1.Street FROM schools AS T1 INNER JOIN frpm AS T2 ON T1.CDSCode = T2.CDSCode;\"},\n        {\"id\" : 3, \"sql statement\" : \"SELECT T1.School, T1.Street FROM schools AS T1 INNER JOIN frpm AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.`Enrollment (K-12)` - T2.`Enrollment (Ages 5-17)` > 30;\"}\n    ],\n    \"edges\": [\n        {\"source\": 1, \"target\": 2},\n        {\"source\": 2, \"target\": 3}\n    ]\n}\n```"
+        ]
+    },
+    {
+        "question_id": 24,
+        "db_id": "california_schools",
+        "question": "Give the names of the schools with the percent eligible for free meals in K-12 is more than 0.1 and test takers whose test score is greater than or equal to 1500?",
+        "evidence": "Percent eligible for free meals = Free Meal Count (K-12) / Total (Enrollment (K-12)",
+        "SQL": "SELECT T2.`School Name` FROM satscores AS T1 INNER JOIN frpm AS T2 ON T1.cds = T2.CDSCode WHERE CAST(T2.`Free Meal Count (K-12)` AS REAL) / T2.`Enrollment (K-12)` > 0.1 AND T1.NumGE1500 > 0",
+        "difficulty": "moderate",
+        "graph": [
+            "```json\n{\n    \"nodes\": [\n        {\"id\" : 1, \"sql statement\" : \"SELECT T2.`School Name` FROM satscores AS T1 INNER JOIN frpm AS T2 ON T1.cds = T2.CDSCode;\"},\n        {\"id\" : 2, \"sql statement\" : \"SELECT T2.`School Name` FROM satscores AS T1 INNER JOIN frpm AS T2 ON T1.cds = T2.CDSCode WHERE CAST(T2.`Free Meal Count (K-12)` AS REAL) / T2.`Enrollment (K-12)` > 0.1;\"},\n        {\"id\" : 3, \"sql statement\" : \"SELECT T2.`School Name` FROM satscores AS T1 INNER JOIN frpm AS T2 ON T1.cds = T2.CDSCode WHERE CAST(T2.`Free Meal Count (K-12)` AS REAL) / T2.`Enrollment (K-12)` > 0.1 AND T1.NumGE1500 > 0;\"}\n    ],\n    \"edges\": [\n        {\"source\": 1, \"target\": 2},\n        {\"source\": 2, \"target\": 3}\n    ]\n}\n```"
+        ]
+    },
+    {
+        "question_id": 25,
+        "db_id": "california_schools",
+        "question": "Name schools in Riverside which the average of average math score for SAT is grater than 400, what is the funding type of these schools?",
+        "evidence": "Average of average math = sum(average math scores) / count(schools).",
+        "SQL": "SELECT T1.sname, T2.`Charter Funding Type` FROM satscores AS T1 INNER JOIN frpm AS T2 ON T1.cds = T2.CDSCode WHERE T2.`District Name` LIKE 'Riverside%' GROUP BY T1.sname, T2.`Charter Funding Type` HAVING CAST(SUM(T1.AvgScrMath) AS REAL) / COUNT(T1.cds) > 400",
+        "difficulty": "moderate",
+        "graph": [
+            "```json\n{\n    \"nodes\": [\n        {\"id\" : 1, \"sql statement\" : \"SELECT T1.sname, T2.`Charter Funding Type` FROM satscores AS T1 INNER JOIN frpm AS T2 ON T1.cds = T2.CDSCode;\"},\n        {\"id\" : 2, \"sql statement\" : \"SELECT T1.sname, T2.`Charter Funding Type` FROM satscores AS T1 INNER JOIN frpm AS T2 ON T1.cds = T2.CDSCode WHERE T2.`District Name` LIKE 'Riverside%';\"},\n        {\"id\" : 3, \"sql statement\" : \"SELECT T1.sname, T2.`Charter Funding Type` FROM satscores AS T1 INNER JOIN frpm AS T2 ON T1.cds = T2.CDSCode WHERE T2.`District Name` LIKE 'Riverside%' GROUP BY T1.sname, T2.`Charter Funding Type`;\"},\n        {\"id\" : 4, \"sql statement\" : \"SELECT T1.sname, T2.`Charter Funding Type` FROM satscores AS T1 INNER JOIN frpm AS T2 ON T1.cds = T2.CDSCode WHERE T2.`District Name` LIKE 'Riverside%' GROUP BY T1.sname, T2.`Charter Funding Type` HAVING CAST(SUM(T1.AvgScrMath) AS REAL) / COUNT(T1.cds) > 400;\"}\n    ],\n    \"edges\": [\n        {\"source\": 1, \"target\": 2},\n        {\"source\": 2, \"target\": 3},\n        {\"source\": 3, \"target\": 4}\n    ]\n}\n```"
+        ]
+    },
+    {
+        "question_id": 26,
+        "db_id": "california_schools",
+        "question": "State the names and full communication address of high schools in Monterey which has more than 800 free or reduced price meals for ages 15-17?",
+        "evidence": "Full communication address should include Street, City, State and zip code if any.",
+        "SQL": "SELECT T1.`School Name`, T2.Street, T2.City, T2.State, T2.Zip FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.County = 'Monterey' AND T1.`Free Meal Count (Ages 5-17)` > 800 AND T1.`School Type` = 'High Schools (Public)'",
+        "difficulty": "moderate",
+        "graph": [
+            "```json\n{\n    \"nodes\": [\n        {\"id\" : 1, \"sql statement\" : \"SELECT T1.`School Name`, T2.Street, T2.City, T2.State, T2.Zip FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode;\"},\n        {\"id\" : 2, \"sql statement\" : \"SELECT T1.`School Name`, T2.Street, T2.City, T2.State, T2.Zip FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.County = 'Monterey';\"},\n        {\"id\" : 3, \"sql statement\" : \"SELECT T1.`School Name`, T2.Street, T2.City, T2.State, T2.Zip FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.County = 'Monterey' AND T1.`Free Meal Count (Ages 5-17)` > 800;\"},\n        {\"id\" : 4, \"sql statement\" : \"SELECT T1.`School Name`, T2.Street, T2.City, T2.State, T2.Zip FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.County = 'Monterey' AND T1.`Free Meal Count (Ages 5-17)` > 800 AND T1.`School Type` = 'High Schools (Public)';\"}\n    ],\n    \"edges\": [\n        {\"source\": 1, \"target\": 2},\n        {\"source\": 2, \"target\": 3},\n        {\"source\": 3, \"target\": 4}\n    ]\n}\n```"
+        ]
+    },
+    {
+        "question_id": 27,
+        "db_id": "california_schools",
+        "question": "What is the average score in writing for the schools that were opened after 1991 or closed before 2000? List the school names along with the score. Also, list the communication number of the schools if there is any.",
+        "evidence": "Communication number refers to phone number.",
+        "SQL": "SELECT T2.School, T1.AvgScrWrite, T2.Phone FROM schools AS T2 LEFT JOIN satscores AS T1 ON T2.CDSCode = T1.cds WHERE strftime('%Y', T2.OpenDate) > '1991' OR strftime('%Y', T2.ClosedDate) < '2000'",
+        "difficulty": "moderate",
+        "graph": [
+            "```json\n{\n    \"nodes\": [\n        {\"id\" : 1, \"sql statement\" : \"SELECT T2.School, T1.AvgScrWrite, T2.Phone FROM schools AS T2 LEFT JOIN satscores AS T1 ON T2.CDSCode = T1.cds;\"},\n        {\"id\" : 2, \"sql statement\" : \"SELECT T2.School, T1.AvgScrWrite, T2.Phone FROM schools AS T2 LEFT JOIN satscores AS T1 ON T2.CDSCode = T1.cds WHERE strftime('%Y', T2.OpenDate) > '1991' OR strftime('%Y', T2.ClosedDate) < '2000';\"}\n    ],\n    \"edges\": [\n        {\"source\": 1, \"target\": 2}\n    ]\n}\n```"
+        ]
+    },
+    {
+        "question_id": 28,
+        "db_id": "california_schools",
+        "question": "Consider the average difference between K-12 enrollment and 15-17 enrollment of schools that are locally funded, list the names and DOC type of schools which has a difference above this average.",
+        "evidence": "Difference between K-12 enrollment and 15-17 enrollment can be computed by `Enrollment (K-12)` - `Enrollment (Ages 5-17)`",
+        "SQL": "SELECT T2.School, T2.DOC FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.FundingType = 'Locally funded' AND (T1.`Enrollment (K-12)` - T1.`Enrollment (Ages 5-17)`) > (SELECT AVG(T3.`Enrollment (K-12)` - T3.`Enrollment (Ages 5-17)`) FROM frpm AS T3 INNER JOIN schools AS T4 ON T3.CDSCode = T4.CDSCode WHERE T4.FundingType = 'Locally funded')",
+        "difficulty": "challenging",
+        "graph": [
+            "```json\n{\n    \"nodes\": [\n        {\"id\": 1, \"sql statement\": \"SELECT AVG(T3.`Enrollment (K-12)` - T3.`Enrollment (Ages 5-17)`) FROM frpm AS T3 INNER JOIN schools AS T4 ON T3.CDSCode = T4.CDSCode WHERE T4.FundingType = 'Locally funded';\"},\n        {\"id\": 2, \"sql statement\": \"SELECT T2.School, T2.DOC FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.FundingType = 'Locally funded' AND (T1.`Enrollment (K-12)` - T1.`Enrollment (Ages 5-17)`) > (SELECT AVG(T3.`Enrollment (K-12)` - T3.`Enrollment (Ages 5-17)`) FROM frpm AS T3 INNER JOIN schools AS T4 ON T3.CDSCode = T4.CDSCode WHERE T4.FundingType = 'Locally funded');\"}\n    ],\n    \"edges\": [\n        {\"source\": 1, \"target\": 2}\n    ]\n}\n```"
+        ]
+    },
+    {
+        "question_id": 31,
+        "db_id": "california_schools",
+        "question": "What is the eligible free rate of the 10th and 11th schools with the highest enrolment for students in grades 1 through 12?",
+        "evidence": "K-12 refers to students in grades 1 through 12; Eligible free rate for K-12 = `Free Meal Count (K-12)` / `Enrollment (K-12)`",
+        "SQL": "SELECT CAST(`Free Meal Count (K-12)` AS REAL) / `Enrollment (K-12)` FROM frpm ORDER BY `Enrollment (K-12)` DESC LIMIT 9, 2",
+        "difficulty": "moderate",
+        "graph": [
+            "```json\n{\n    \"nodes\": [\n        {\"id\" : 1, \"sql statement\" : \"SELECT CAST(`Free Meal Count (K-12)` AS REAL) / `Enrollment (K-12)` FROM frpm;\"},\n        {\"id\" : 2, \"sql statement\" : \"SELECT CAST(`Free Meal Count (K-12)` AS REAL) / `Enrollment (K-12)` FROM frpm ORDER BY `Enrollment (K-12)` DESC;\"},\n        {\"id\" : 3, \"sql statement\" : \"SELECT CAST(`Free Meal Count (K-12)` AS REAL) / `Enrollment (K-12)` FROM frpm ORDER BY `Enrollment (K-12)` DESC LIMIT 9, 2;\"}\n    ],\n    \"edges\": [\n        {\"source\": 1, \"target\": 2},\n        {\"source\": 2, \"target\": 3}\n    ]\n}\n```"
+        ]
+    },
+    {
+        "question_id": 32,
+        "db_id": "california_schools",
+        "question": "What is the eligible free or reduced price meal rate for the top 5 schools in grades 1-12 with the highest free or reduced price meal count of the schools with the ownership code 66?",
+        "evidence": "grades 1-12 means K-12; Eligible free or reduced price meal rate for K-12 = `FRPM Count (K-12)` / `Enrollment (K-12)`",
+        "SQL": "SELECT CAST(T1.`FRPM Count (K-12)` AS REAL) / T1.`Enrollment (K-12)` FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.SOC = 66 ORDER BY T1.`FRPM Count (K-12)` DESC LIMIT 5",
+        "difficulty": "moderate",
+        "graph": [
+            "```json\n{\n    \"nodes\": [\n        {\"id\" : 1, \"sql statement\" : \"SELECT CAST(T1.`FRPM Count (K-12)` AS REAL) / T1.`Enrollment (K-12)` FROM frpm AS T1;\"},\n        {\"id\" : 2, \"sql statement\" : \"SELECT CAST(T1.`FRPM Count (K-12)` AS REAL) / T1.`Enrollment (K-12)` FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode;\"},\n        {\"id\" : 3, \"sql statement\" : \"SELECT CAST(T1.`FRPM Count (K-12)` AS REAL) / T1.`Enrollment (K-12)` FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.SOC = 66;\"},\n        {\"id\" : 4, \"sql statement\" : \"SELECT CAST(T1.`FRPM Count (K-12)` AS REAL) / T1.`Enrollment (K-12)` FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.SOC = 66 ORDER BY T1.`FRPM Count (K-12)` DESC;\"},\n        {\"id\" : 5, \"sql statement\" : \"SELECT CAST(T1.`FRPM Count (K-12)` AS REAL) / T1.`Enrollment (K-12)` FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.SOC = 66 ORDER BY T1.`FRPM Count (K-12)` DESC LIMIT 5;\"}\n    ],\n    \"edges\": [\n        {\"source\": 1, \"target\": 2},\n        {\"source\": 2, \"target\": 3},\n        {\"source\": 3, \"target\": 4},\n        {\"source\": 4, \"target\": 5}\n    ]\n}\n```"
+        ]
+    },
+    {
+        "question_id": 33,
+        "db_id": "california_schools",
+        "question": "If there are any, what are the websites address of the schools with a free meal count of 1,900-2,000 to students aged 5-17? Include the name of the school.",
+        "evidence": "",
+        "SQL": "SELECT T2.Website, T1.`School Name` FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T1.`Free Meal Count (Ages 5-17)` BETWEEN 1900 AND 2000 AND T2.Website IS NOT NULL",
+        "difficulty": "moderate",
+        "graph": [
+            "```json\n{\n    \"nodes\": [\n        {\"id\" : 1, \"sql statement\" : \"SELECT T1.`School Name`, T1.`Free Meal Count (Ages 5-17)` FROM frpm;\"},\n        {\"id\" : 2, \"sql statement\" : \"SELECT T1.`School Name`, T1.`Free Meal Count (Ages 5-17)` FROM frpm WHERE T1.`Free Meal Count (Ages 5-17)` BETWEEN 1900 AND 2000;\"},\n        {\"id\" : 3, \"sql statement\" : \"SELECT T2.Website FROM schools AS T2 WHERE T2.Website IS NOT NULL;\"},\n        {\"id\" : 4, \"sql statement\" : \"SELECT T2.Website, T1.`School Name` FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T1.`Free Meal Count (Ages 5-17)` BETWEEN 1900 AND 2000 AND T2.Website IS NOT NULL;\"}\n    ],\n    \"edges\": [\n        {\"source\": 1, \"target\": 2},\n        {\"source\": 2, \"target\": 4},\n        {\"source\": 3, \"target\": 4}\n    ]\n}\n```"
+        ]
+    },
+    {
+        "question_id": 34,
+        "db_id": "california_schools",
+        "question": "What is the free rate for students between the ages of 5 and 17 at the school run by Kacey Gibson?",
+        "evidence": "Eligible free rates for students aged 5-17 = `Free Meal Count (Ages 5-17)` / `Enrollment (Ages 5-17)`",
+        "SQL": "SELECT CAST(T2.`Free Meal Count (Ages 5-17)` AS REAL) / T2.`Enrollment (Ages 5-17)` FROM schools AS T1 INNER JOIN frpm AS T2 ON T1.CDSCode = T2.CDSCode WHERE T1.AdmFName1 = 'Kacey' AND T1.AdmLName1 = 'Gibson'",
+        "difficulty": "moderate",
+        "graph": [
+            "```json\n{\n    \"nodes\": [\n        {\"id\" : 1, \"sql statement\" : \"SELECT CAST(T2.`Free Meal Count (Ages 5-17)` AS REAL) / T2.`Enrollment (Ages 5-17)` FROM frpm AS T2;\"},\n        {\"id\" : 2, \"sql statement\" : \"SELECT CAST(T2.`Free Meal Count (Ages 5-17)` AS REAL) / T2.`Enrollment (Ages 5-17)` FROM schools AS T1 INNER JOIN frpm AS T2 ON T1.CDSCode = T2.CDSCode;\"},\n        {\"id\" : 3, \"sql statement\" : \"SELECT CAST(T2.`Free Meal Count (Ages 5-17)` AS REAL) / T2.`Enrollment (Ages 5-17)` FROM schools AS T1 INNER JOIN frpm AS T2 ON T1.CDSCode = T2.CDSCode WHERE T1.AdmFName1 = 'Kacey' AND T1.AdmLName1 = 'Gibson';\"}\n    ],\n    \"edges\": [\n        {\"source\": 1, \"target\": 2},\n        {\"source\": 2, \"target\": 3}\n    ]\n}\n```"
+        ]
+    },
+    {
+        "question_id": 35,
+        "db_id": "california_schools",
+        "question": "What is the administrator's email address of the chartered school with the fewest students enrolled in grades 1 through 12?",
+        "evidence": "Charted school means `Charter School (Y/N)` = 1 in the table frpm; Students enrolled in grades 1 through 12 refers to `Enrollment (K-12)`",
+        "SQL": "SELECT T2.AdmEmail1 FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T1.`Charter School (Y/N)` = 1 ORDER BY T1.`Enrollment (K-12)` ASC LIMIT 1",
+        "difficulty": "moderate",
+        "graph": [
+            "```json\n{\n    \"nodes\": [\n        {\"id\" : 1, \"sql statement\" : \"SELECT T2.AdmEmail1 FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode;\"},\n        {\"id\" : 2, \"sql statement\" : \"SELECT T2.AdmEmail1 FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T1.`Charter School (Y/N)` = 1;\"},\n        {\"id\" : 3, \"sql statement\" : \"SELECT T2.AdmEmail1 FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T1.`Charter School (Y/N)` = 1 ORDER BY T1.`Enrollment (K-12)` ASC LIMIT 1;\"}\n    ],\n    \"edges\": [\n        {\"source\": 1, \"target\": 2},\n        {\"source\": 2, \"target\": 3}\n    ]\n}\n```"
+        ]
+    },
+    {
+        "question_id": 36,
+        "db_id": "california_schools",
+        "question": "Under whose administration is the school with the highest number of students scoring 1500 or more on the SAT? Indicate their full names.",
+        "evidence": "full name means first name, last name; There are at most 3 administrators for each school; SAT Scores are greater or equal to 1500 refers to NumGE1500",
+        "SQL": "SELECT T2.AdmFName1, T2.AdmLName1, T2.AdmFName2, T2.AdmLName2, T2.AdmFName3, T2.AdmLName3 FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode ORDER BY T1.NumGE1500 DESC LIMIT 1",
+        "difficulty": "challenging",
+        "graph": [
+            "```json\n{\n    \"nodes\": [\n        {\"id\" : 1, \"sql statement\" : \"SELECT T2.AdmFName1, T2.AdmLName1, T2.AdmFName2, T2.AdmLName2, T2.AdmFName3, T2.AdmLName3 FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode;\"},\n        {\"id\" : 2, \"sql statement\" : \"SELECT T2.AdmFName1, T2.AdmLName1, T2.AdmFName2, T2.AdmLName2, T2.AdmFName3, T2.AdmLName3 FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode ORDER BY T1.NumGE1500 DESC;\"},\n        {\"id\" : 3, \"sql statement\" : \"SELECT T2.AdmFName1, T2.AdmLName1, T2.AdmFName2, T2.AdmLName2, T2.AdmFName3, T2.AdmLName3 FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode ORDER BY T1.NumGE1500 DESC LIMIT 1;\"}\n    ],\n    \"edges\": [\n        {\"source\": 1, \"target\": 2},\n        {\"source\": 2, \"target\": 3}\n    ]\n}\n```"
+        ]
+    },
+    {
+        "question_id": 37,
+        "db_id": "california_schools",
+        "question": "What is the complete address of the school with the lowest excellence rate? Indicate the Street, City, Zip and State.",
+        "evidence": "Execellence Rate = NumGE1500 / NumTstTakr; complete address has Street, City, State, Zip code",
+        "SQL": "SELECT T2.Street, T2.City, T2.State, T2.Zip FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode ORDER BY CAST(T1.NumGE1500 AS REAL) / T1.NumTstTakr ASC LIMIT 1",
+        "difficulty": "moderate",
+        "graph": [
+            "```json\n{\n    \"nodes\": [\n        {\"id\" : 1, \"sql statement\" : \"SELECT T2.Street, T2.City, T2.State, T2.Zip FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode;\"},\n        {\"id\" : 2, \"sql statement\" : \"SELECT T2.Street, T2.City, T2.State, T2.Zip FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode ORDER BY CAST(T1.NumGE1500 AS REAL) / T1.NumTstTakr ASC;\"},\n        {\"id\" : 3, \"sql statement\" : \"SELECT T2.Street, T2.City, T2.State, T2.Zip FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode ORDER BY CAST(T1.NumGE1500 AS REAL) / T1.NumTstTakr ASC LIMIT 1;\"}\n    ],\n    \"edges\": [\n        {\"source\": 1, \"target\": 2},\n        {\"source\": 2, \"target\": 3}\n    ]\n}\n```"
+        ]
+    },
+    {
+        "question_id": 40,
+        "db_id": "california_schools",
+        "question": "What is the telephone number for the school with the lowest average score in reading in Fresno Unified?",
+        "evidence": "Fresno Unified is a name of district;",
+        "SQL": "SELECT T2.Phone FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode WHERE T2.District = 'Fresno Unified' AND T1.AvgScrRead IS NOT NULL ORDER BY T1.AvgScrRead ASC LIMIT 1",
+        "difficulty": "moderate",
+        "graph": [
+            "```json\n{\n    \"nodes\": [\n        {\"id\" : 1, \"sql statement\" : \"SELECT T2.Phone FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode;\"},\n        {\"id\" : 2, \"sql statement\" : \"SELECT T2.Phone FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode WHERE T2.District = 'Fresno Unified' AND T1.AvgScrRead IS NOT NULL;\"},\n        {\"id\" : 3, \"sql statement\" : \"SELECT T2.Phone FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode WHERE T2.District = 'Fresno Unified' AND T1.AvgScrRead IS NOT NULL ORDER BY T1.AvgScrRead ASC;\"},\n        {\"id\" : 4, \"sql statement\" : \"SELECT T2.Phone FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode WHERE T2.District = 'Fresno Unified' AND T1.AvgScrRead IS NOT NULL ORDER BY T1.AvgScrRead ASC LIMIT 1;\"}\n    ],\n    \"edges\": [\n        {\"source\": 1, \"target\": 2},\n        {\"source\": 2, \"target\": 3},\n        {\"source\": 3, \"target\": 4}\n    ]\n}\n```"
+        ]
+    },
+    {
+        "question_id": 43,
+        "db_id": "california_schools",
+        "question": "What is the average math score of the school with the lowest average score for all subjects, and in which county is it located?",
+        "evidence": "Average score for all subjects can be computed by AvgScrMath + AvgScrRead + AvgScrWrite",
+        "SQL": "SELECT T1.AvgScrMath, T2.County FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode WHERE T1.AvgScrMath IS NOT NULL ORDER BY T1.AvgScrMath + T1.AvgScrRead + T1.AvgScrWrite ASC LIMIT 1",
+        "difficulty": "moderate",
+        "graph": [
+            "```json\n{\n    \"nodes\": [\n        {\"id\" : 1, \"sql statement\" : \"SELECT T1.AvgScrMath, T2.County FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode;\"},\n        {\"id\" : 2, \"sql statement\" : \"SELECT T1.AvgScrMath, T2.County FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode WHERE T1.AvgScrMath IS NOT NULL;\"},\n        {\"id\" : 3, \"sql statement\" : \"SELECT T1.AvgScrMath, T2.County FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode WHERE T1.AvgScrMath IS NOT NULL ORDER BY T1.AvgScrMath + T1.AvgScrRead + T1.AvgScrWrite ASC LIMIT 1;\"}\n    ],\n    \"edges\": [\n        {\"source\": 1, \"target\": 2},\n        {\"source\": 2, \"target\": 3}\n    ]\n}\n```"
+        ]
+    },
+    {
+        "question_id": 45,
+        "db_id": "california_schools",
+        "question": "What is the average writing score of each of the schools managed by Ricci Ulrich? List the schools and the corresponding average writing scores.",
+        "evidence": "Usually, administrators manage the school stuff.",
+        "SQL": "SELECT T2.School, T1.AvgScrWrite FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode WHERE T2.AdmFName1 = 'Ricci' AND T2.AdmLName1 = 'Ulrich'",
+        "difficulty": "moderate",
+        "graph": [
+            "```json\n{\n    \"nodes\": [\n        {\"id\" : 1, \"sql statement\" : \"SELECT T2.School, T1.AvgScrWrite FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode;\"},\n        {\"id\" : 2, \"sql statement\" : \"SELECT T2.School, T1.AvgScrWrite FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode WHERE T2.AdmFName1 = 'Ricci' AND T2.AdmLName1 = 'Ulrich';\"}\n    ],\n    \"edges\": [\n        {\"source\": 1, \"target\": 2}\n    ]\n}\n```"
+        ]
+    },
+    {
+        "question_id": 47,
+        "db_id": "california_schools",
+        "question": "What is the monthly average number of schools that opened in Alameda County under the jurisdiction of the Elementary School District in 1980?",
+        "evidence": "Elementary School District refers to DOC = 52; Monthly average number of schools that opened in 1980 = count(schools that opened in 1980) / 12",
+        "SQL": "SELECT CAST(COUNT(School) AS REAL) / 12 FROM schools WHERE DOC = 52 AND County = 'Alameda' AND strftime('%Y', OpenDate) = '1980'",
+        "difficulty": "moderate",
+        "graph": [
+            "```json\n{\n    \"nodes\": [\n        {\"id\" : 1, \"sql statement\" : \"SELECT School FROM schools;\"},\n        {\"id\" : 2, \"sql statement\" : \"SELECT School FROM schools WHERE DOC = 52;\"},\n        {\"id\" : 3, \"sql statement\" : \"SELECT School FROM schools WHERE DOC = 52 AND County = 'Alameda';\"},\n        {\"id\" : 4, \"sql statement\" : \"SELECT School FROM schools WHERE DOC = 52 AND County = 'Alameda' AND strftime('%Y', OpenDate) = '1980';\"},\n        {\"id\" : 5, \"sql statement\" : \"SELECT COUNT(School) FROM schools WHERE DOC = 52 AND County = 'Alameda' AND strftime('%Y', OpenDate) = '1980';\"},\n        {\"id\" : 6, \"sql statement\" : \"SELECT CAST(COUNT(School) AS REAL) / 12 FROM schools WHERE DOC = 52 AND County = 'Alameda' AND strftime('%Y', OpenDate) = '1980;\"}\n    ],\n    \"edges\": [\n        {\"source\": 1, \"target\": 2},\n        {\"source\": 2, \"target\": 3},\n        {\"source\": 3, \"target\": 4},\n        {\"source\": 4, \"target\": 5},\n        {\"source\": 5, \"target\": 6}\n    ]\n}\n```"
+        ]
+    },
+    {
+        "question_id": 48,
+        "db_id": "california_schools",
+        "question": "What is the ratio of merged Unified School District schools in Orange County to merged Elementary School District schools?",
+        "evidence": "Elementary School District refers to DOC = 52; Unified School District refers to DOC = 54.",
+        "SQL": "SELECT CAST(SUM(CASE WHEN DOC = 54 THEN 1 ELSE 0 END) AS REAL) / SUM(CASE WHEN DOC = 52 THEN 1 ELSE 0 END) FROM schools WHERE StatusType = 'Merged' AND County = 'Orange'",
+        "difficulty": "moderate",
+        "graph": [
+            "```json\n{\n    \"nodes\": [\n        {\"id\" : 1, \"sql statement\" : \"SELECT SUM(CASE WHEN DOC = 54 THEN 1 ELSE 0 END) FROM schools;\"},\n        {\"id\" : 2, \"sql statement\" : \"SELECT SUM(CASE WHEN DOC = 52 THEN 1 ELSE 0 END) FROM schools;\"},\n        {\"id\" : 3, \"sql statement\" : \"SELECT SUM(CASE WHEN DOC = 54 THEN 1 ELSE 0 END) FROM schools WHERE StatusType = 'Merged' AND County = 'Orange';\"},\n        {\"id\" : 4, \"sql statement\" : \"SELECT SUM(CASE WHEN DOC = 52 THEN 1 ELSE 0 END) FROM schools WHERE StatusType = 'Merged' AND County = 'Orange';\"},\n        {\"id\" : 5, \"sql statement\" : \"SELECT CAST(SUM(CASE WHEN DOC = 54 THEN 1 ELSE 0 END) AS REAL) / SUM(CASE WHEN DOC = 52 THEN 1 ELSE 0 END) FROM schools WHERE StatusType = 'Merged' AND County = 'Orange';\"}\n    ],\n    \"edges\": [\n        {\"source\": 1, \"target\": 3},\n        {\"source\": 2, \"target\": 4},\n        {\"source\": 3, \"target\": 5},\n        {\"source\": 4, \"target\": 5}\n    ]\n}\n```"
+        ]
+    },
+    {
+        "question_id": 49,
+        "db_id": "california_schools",
+        "question": "Which different county has the most number of closed schools? Please provide the name of each school as well as the closure date.",
+        "evidence": "Closure date and closed date are synonyms; 'Closed' was mentioned in schools.StatusType.",
+        "SQL": "SELECT DISTINCT County, School, ClosedDate FROM schools WHERE County = ( SELECT County FROM schools WHERE StatusType = 'Closed' GROUP BY County ORDER BY COUNT(School) DESC LIMIT 1 ) AND StatusType = 'Closed' AND school IS NOT NULL",
+        "difficulty": "moderate",
+        "graph": [
+            "```json\n{\n    \"nodes\": [\n        {\"id\" : 1, \"sql statement\" : \"SELECT County FROM schools WHERE StatusType = 'Closed' GROUP BY County ORDER BY COUNT(School) DESC LIMIT 1;\"},\n        {\"id\" : 2, \"sql statement\" : \"SELECT DISTINCT County, School, ClosedDate FROM schools WHERE County = ( SELECT County FROM schools WHERE StatusType = 'Closed' GROUP BY County ORDER BY COUNT(School) DESC LIMIT 1 ) AND StatusType = 'Closed' AND school IS NOT NULL;\"}\n    ],\n    \"edges\": [\n        {\"source\": 1, \"target\": 2}\n    ]\n}\n```"
+        ]
+    }
+]
