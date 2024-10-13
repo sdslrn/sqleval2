@@ -1,0 +1,7 @@
+id,detail,nl,nl_node1,nl_node2,nl_node3
+37,,似乎把NumGE1500当作了得分超过1500,此查询检索 CDS，并把NumGE1500的类型转成REAL后，计算每个记录中 NumGE1500 占 NumTstTakr 的比例，前提是NumGE1500和NumTstTakr的值都存在且 NumTstTakr 不为零,此查询检索 CDS，并把NumGE1500的类型转成REAL后，计算每个记录中 NumGE1500 占 NumTstTakr 的比例，前提是NumGE1500和NumTstTakr的值都存在且 NumTstTakr 不为零,此查询检索 CDS，并把NumGE1500的类型转成REAL后，计算每个记录中 NumGE1500 占 NumTstTakr 的比例，前提是NumGE1500和NumTstTakr的值都存在且 NumTstTakr 不为零
+
+244,"删去(1,3)改为(1,2)",,,,
+250,"删去(1,3)改为(1,2)",,,,
+,,,,,
+,,,,,

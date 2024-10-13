@@ -11,17 +11,20 @@
                 {
                     "id": 1,
                     "sql statement": "SELECT cds, CAST(NumGE1500 AS REAL) / NumTstTakr AS rate FROM satscores WHERE NumGE1500 IS NOT NULL AND NumTstTakr IS NOT NULL AND NumTstTakr != 0",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "This query retrieves the CDS, converts NumGE1500 to REAL, and then calculates the ratio of NumGE1500 to NumTstTakr for each record, provided that both NumGE1500 and NumTstTakr exist and NumTstTakr is not zero."
                 },
                 {
                     "id": 2,
                     "sql statement": "SELECT MIN(CAST(NumGE1500 AS REAL) / NumTstTakr) AS min_rate FROM satscores WHERE NumGE1500 IS NOT NULL AND NumTstTakr IS NOT NULL AND NumTstTakr != 0",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "This query calculates the minimum ratio of NumGE1500 to NumTstTakr for records where both NumGE1500 and NumTstTakr exist and NumTstTakr is not zero. It casts NumGE1500 to REAL to perform the division accurately and returns the smallest resulting value as min_rate."
                 },
                 {
                     "id": 3,
-                    "sql statement": "SELECT T2.Street, T2.City, T2.Zip, T2.State FROM schools AS T2 INNER JOIN (SELECT cds, CAST(NumGE1500 AS REAL) / NumTstTakr AS rate FROM satscores WHERE NumGE1500 IS NOT NULL AND NumTstTakr IS NOT NULL AND NumTstTakr != 0) AS T1 ON T2.CDSCode = T1.cds WHERE T1.rate = (SELECT MIN(CAST(NumGE1500 AS REAL) / NumTstTakr) AS min_rate FROM satscores WHERE NumGE1500 IS NOT NULL AND NumTstTakr IS NOT NULL AND NumTstTakr != 0) ORDER BY T2.CDSCode",
-                    "exec_res": "success"
+                    "sql statement": "This query retrieves the Street, City, Zip, and State from the schools table for schools where the ratio of NumGE1500 to NumTstTakr is the minimum possible value. It joins the schools table with a subquery that calculates this ratio as rate for each record in the satscores table, ensuring that NumGE1500 and NumTstTakr are not null and NumTstTakr is not zero. The final result is ordered by CDSCode.",
+                    "exec_res": "success",
+                    "nl": "This query retrieves the street, city, zip code, and state of schools from the `schools` table that have the minimum rate of students scoring above 1500 on the SAT. It joins the `schools` table with a subquery that calculates the rate for each record in the `satscores` table, and filters for the minimum rate, ordering the results by the CDS code."
                 }
             ],
             "edges": [
@@ -33,7 +36,8 @@
                     "source": 2,
                     "target": 3
                 }
-            ]
+            ],
+            "nl": "1. (This query retrieves the CDS code and calculates the rate of students scoring above 1500 on the SAT by dividing the number of students scoring above 1500 by the total number of test takers for each record in the `satscores` table, where both values are not null and the number of test takers is not zero.)\n\n2. (This query finds the minimum rate of students scoring above 1500 on the SAT by calculating the rate for each record in the `satscores` table, where the number of students scoring above 1500 and the number of test takers are not null and the number of test takers is not zero.)\n\n3. (This query retrieves the street, city, zip code, and state of schools from the `schools` table that have the minimum rate of students scoring above 1500 on the SAT. It joins the `schools` table with a subquery that calculates the rate for each record in the `satscores` table, and filters for the minimum rate, ordering the results by the CDS code.)"
         },
         "final_check": true
     },
@@ -49,17 +53,20 @@
                 {
                     "id": 1,
                     "sql statement": "SELECT County, COUNT(School) AS SchoolCount FROM schools WHERE strftime('%Y', ClosedDate) BETWEEN '1980' AND '1989' AND StatusType = 'Closed' AND SOC = 11 GROUP BY County",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "Retrieve the name of each county and the number of schools that were closed between 1980 and 1989, where the status type is 'Closed' and the SOC code is 11, grouping the results by county."
                 },
                 {
                     "id": 2,
                     "sql statement": "SELECT MAX(SchoolCount) FROM (SELECT COUNT(School) AS SchoolCount FROM schools WHERE strftime('%Y', ClosedDate) BETWEEN '1980' AND '1989' AND StatusType = 'Closed' AND SOC = 11 GROUP BY County)",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "Find the maximum number of schools closed in any single county between 1980 and 1989, where the status type is 'Closed' and the SOC code is 11."
                 },
                 {
                     "id": 3,
                     "sql statement": "SELECT County FROM (SELECT County, COUNT(School) AS SchoolCount FROM schools WHERE strftime('%Y', ClosedDate) BETWEEN '1980' AND '1989' AND StatusType = 'Closed' AND SOC = 11 GROUP BY County) WHERE SchoolCount = (SELECT MAX(SchoolCount) FROM (SELECT COUNT(School) AS SchoolCount FROM schools WHERE strftime('%Y', ClosedDate) BETWEEN '1980' AND '1989' AND StatusType = 'Closed' AND SOC = 11 GROUP BY County))",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "Identify the county that had the highest number of school closures between 1980 and 1989, where the status type is 'Closed' and the SOC code is 11."
                 }
             ],
             "edges": [
@@ -71,7 +78,8 @@
                     "source": 2,
                     "target": 3
                 }
-            ]
+            ],
+            "nl": "1. (Retrieve the name of each county and the number of schools that were closed between 1980 and 1989, where the status type is 'Closed' and the SOC code is 11, grouping the results by county.)\n2. (Find the maximum number of schools closed in any single county between 1980 and 1989, where the status type is 'Closed' and the SOC code is 11.)\n3. (Identify the county that had the highest number of school closures between 1980 and 1989, where the status type is 'Closed' and the SOC code is 11.)"
         },
         "final_check": true
     },
@@ -87,17 +95,20 @@
                 {
                     "id": 1,
                     "sql statement": "SELECT MIN(Latitude) FROM schools WHERE State = 'CA' AND Latitude IS NOT NULL",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "Find the minimum latitude value among all schools located in California where the latitude is not null."
                 },
                 {
                     "id": 2,
                     "sql statement": "SELECT T2.City, T1.`Low Grade`, T1.`School Name` FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.State = 'CA' AND T2.Latitude IS NOT NULL",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "Retrieve the city, low grade level, and school name for schools in California, joining data from the FRPM and schools tables, where the latitude is not null."
                 },
                 {
                     "id": 3,
                     "sql statement": "SELECT T2.City, T1.`Low Grade`, T1.`School Name` FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.State = 'CA' AND T2.Latitude IS NOT NULL AND T2.Latitude = (SELECT MIN(Latitude) FROM schools WHERE State = 'CA' AND Latitude IS NOT NULL)",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "Retrieve the city, low grade level, and school name for schools in California, joining data from the FRPM and schools tables, where the latitude is not null and matches the minimum latitude value among all schools in California."
                 }
             ],
             "edges": [
@@ -109,7 +120,8 @@
                     "source": 2,
                     "target": 3
                 }
-            ]
+            ],
+            "nl": "1. (Find the minimum latitude value among all schools located in California where the latitude is not null.)\n2. (Retrieve the city, low grade level, and school name for schools in California, joining data from the FRPM and schools tables, where the latitude is not null.)\n3. (Retrieve the city, low grade level, and school name for schools in California, joining data from the FRPM and schools tables, where the latitude is not null and matches the minimum latitude value among all schools in California.)"
         },
         "final_check": true
     },
@@ -125,17 +137,20 @@
                 {
                     "id": 1,
                     "sql statement": "SELECT MIN(birth_date) FROM client WHERE gender = 'F'",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "Find the earliest birth date among female clients."
                 },
                 {
                     "id": 2,
                     "sql statement": "SELECT MIN(T2.A11) FROM client AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id WHERE T1.gender = 'F' AND T1.birth_date = (SELECT MIN(birth_date) FROM client WHERE gender = 'F')",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "Determine the minimum value of the A11 attribute from the district table for the district of the oldest female client."
                 },
                 {
                     "id": 3,
                     "sql statement": "SELECT T3.account_id FROM client AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id INNER JOIN account AS T3 ON T2.district_id = T3.district_id WHERE T1.gender = 'F' AND T1.birth_date = (SELECT MIN(birth_date) FROM client WHERE gender = 'F') AND T2.A11 = (SELECT MIN(T2.A11) FROM client AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id WHERE T1.gender = 'F' AND T1.birth_date = (SELECT MIN(birth_date) FROM client WHERE gender = 'F'))",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "Retrieve the account IDs associated with the district of the oldest female client, where the district has the minimum A11 value among districts of the oldest female clients."
                 }
             ],
             "edges": [
@@ -147,7 +162,8 @@
                     "source": 2,
                     "target": 3
                 }
-            ]
+            ],
+            "nl": "1. (Find the earliest birth date among female clients.)\n2. (Determine the minimum value of the A11 attribute from the district table for the district of the oldest female client.)\n3. (Retrieve the account IDs associated with the district of the oldest female client, where the district has the minimum A11 value among districts of the oldest female clients.)"
         },
         "final_check": true
     },
@@ -163,22 +179,26 @@
                 {
                     "id": 1,
                     "sql statement": "SELECT molecule_id, COUNT(bond_type) AS bond_count FROM bond WHERE bond_type = '=' GROUP BY molecule_id",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "Retrieve the molecule IDs and the count of double bonds for each molecule, grouping the results by molecule ID."
                 },
                 {
                     "id": 2,
                     "sql statement": "SELECT MAX(bond_count) FROM (SELECT molecule_id, COUNT(bond_type) AS bond_count FROM bond WHERE bond_type = '=' GROUP BY molecule_id) AS subquery",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "Find the maximum number of double bonds present in any single molecule."
                 },
                 {
                     "id": 3,
                     "sql statement": "SELECT T.molecule_id, COUNT(T.bond_type) AS bond_count FROM bond AS T WHERE T.bond_type = '=' GROUP BY T.molecule_id HAVING bond_count = (SELECT MAX(bond_count) FROM (SELECT molecule_id, COUNT(bond_type) AS bond_count FROM bond WHERE bond_type = '=' GROUP BY molecule_id) AS subquery) ORDER BY bond_count DESC",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "Identify the molecule IDs that have the highest number of double bonds, and list them along with their double bond count, ordered by the count in descending order."
                 },
                 {
                     "id": 4,
                     "sql statement": "SELECT T1.label FROM molecule AS T1 INNER JOIN (SELECT T.molecule_id, COUNT(T.bond_type) AS bond_count FROM bond AS T WHERE T.bond_type = '=' GROUP BY T.molecule_id HAVING bond_count = (SELECT MAX(bond_count) FROM (SELECT molecule_id, COUNT(bond_type) AS bond_count FROM bond WHERE bond_type = '=' GROUP BY molecule_id) AS subquery) ORDER BY bond_count DESC) AS T2 ON T1.molecule_id = T2.molecule_id",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "Get the labels of molecules that have the highest number of double bonds, based on the previously identified maximum double bond count."
                 }
             ],
             "edges": [
@@ -194,7 +214,8 @@
                     "source": 3,
                     "target": 4
                 }
-            ]
+            ],
+            "nl": "1. (Retrieve the molecule IDs and the count of double bonds for each molecule, grouping the results by molecule ID.)\n2. (Find the maximum number of double bonds present in any single molecule.)\n3. (Identify the molecule IDs that have the highest number of double bonds, and list them along with their double bond count, ordered by the count in descending order.)\n4. (Get the labels of molecules that have the highest number of double bonds, based on the previously identified maximum double bond count.)"
         },
         "final_check": true
     },
@@ -210,22 +231,26 @@
                 {
                     "id": 1,
                     "sql statement": "SELECT T3.molecule_id, COUNT(T1.bond_type) AS bond_count FROM bond AS T1 INNER JOIN molecule AS T3 ON T1.molecule_id = T3.molecule_id WHERE T3.label = '+' AND T1.bond_type = '=' GROUP BY T3.molecule_id",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "Retrieve the molecule IDs and the count of '=' bond types for molecules labeled with '+', grouping the results by molecule ID."
                 },
                 {
                     "id": 2,
                     "sql statement": "SELECT MAX(bond_count) FROM (SELECT T3.molecule_id, COUNT(T1.bond_type) AS bond_count FROM bond AS T1 INNER JOIN molecule AS T3 ON T1.molecule_id = T3.molecule_id WHERE T3.label = '+' AND T1.bond_type = '=' GROUP BY T3.molecule_id) AS subquery",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "Find the maximum count of '=' bond types among molecules labeled with '+'."
                 },
                 {
                     "id": 3,
                     "sql statement": "SELECT T3.molecule_id, COUNT(T1.bond_type) AS bond_count FROM bond AS T1 INNER JOIN molecule AS T3 ON T1.molecule_id = T3.molecule_id WHERE T3.label = '+' AND T1.bond_type = '=' GROUP BY T3.molecule_id HAVING bond_count = (SELECT MAX(bond_count) FROM (SELECT T3.molecule_id, COUNT(T1.bond_type) AS bond_count FROM bond AS T1 INNER JOIN molecule AS T3 ON T1.molecule_id = T3.molecule_id WHERE T3.label = '+' AND T1.bond_type = '=' GROUP BY T3.molecule_id) AS subquery) ORDER BY bond_count DESC",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "Identify the molecule IDs with the highest count of '=' bond types among those labeled with '+', and order the results by the bond count in descending order."
                 },
                 {
                     "id": 4,
                     "sql statement": "SELECT T.molecule_id FROM (SELECT T3.molecule_id, COUNT(T1.bond_type) AS bond_count FROM bond AS T1 INNER JOIN molecule AS T3 ON T1.molecule_id = T3.molecule_id WHERE T3.label = '+' AND T1.bond_type = '=' GROUP BY T3.molecule_id HAVING bond_count = (SELECT MAX(bond_count) FROM (SELECT T3.molecule_id, COUNT(T1.bond_type) AS bond_count FROM bond AS T1 INNER JOIN molecule AS T3 ON T1.molecule_id = T3.molecule_id WHERE T3.label = '+' AND T1.bond_type = '=' GROUP BY T3.molecule_id) AS subquery) ORDER BY bond_count DESC) AS T",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "Extract the molecule IDs that have the highest count of '=' bond types among molecules labeled with '+'."
                 }
             ],
             "edges": [
@@ -241,7 +266,8 @@
                     "source": 3,
                     "target": 4
                 }
-            ]
+            ],
+            "nl": "1. (Retrieve the molecule IDs and the count of '=' bond types for molecules labeled with '+', grouping the results by molecule ID.)\n2. (Find the maximum count of '=' bond types among molecules labeled with '+'.)\n3. (Identify the molecule IDs with the highest count of '=' bond types among those labeled with '+', and order the results by the bond count in descending order.)\n4. (Extract the molecule IDs that have the highest count of '=' bond types among molecules labeled with '+'.)"
         },
         "final_check": true
     },
@@ -257,17 +283,20 @@
                 {
                     "id": 1,
                     "sql statement": "SELECT COUNT(T1.id) AS card_count FROM sets AS T1 INNER JOIN set_translations AS T2 ON T1.code = T2.setCode WHERE T2.language = 'Russian' GROUP BY T1.baseSetSize",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "This query counts the number of sets that have translations in Russian, grouping the results by the base set size, and returns the count for each group."
                 },
                 {
                     "id": 2,
                     "sql statement": "SELECT MAX(card_count) FROM (SELECT COUNT(T1.id) AS card_count FROM sets AS T1 INNER JOIN set_translations AS T2 ON T1.code = T2.setCode WHERE T2.language = 'Russian' GROUP BY T1.baseSetSize) AS subquery",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "This query finds the maximum number of sets that have translations in Russian for any given base set size."
                 },
                 {
                     "id": 3,
                     "sql statement": "SELECT T1.id FROM sets AS T1 INNER JOIN set_translations AS T2 ON T1.code = T2.setCode WHERE T2.language = 'Russian' GROUP BY T1.baseSetSize HAVING COUNT(T1.id) = (SELECT MAX(card_count) FROM (SELECT COUNT(T1.id) AS card_count FROM sets AS T1 INNER JOIN set_translations AS T2 ON T1.code = T2.setCode WHERE T2.language = 'Russian' GROUP BY T1.baseSetSize) AS subquery)",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "This query retrieves the IDs of sets that have the maximum number of translations in Russian, grouped by base set size."
                 }
             ],
             "edges": [
@@ -279,7 +308,8 @@
                     "source": 2,
                     "target": 3
                 }
-            ]
+            ],
+            "nl": "1. (This query counts the number of sets that have translations in Russian, grouping the results by the base set size, and returns the count for each group.)\n2. (This query finds the maximum number of sets that have translations in Russian for any given base set size.)\n3. (This query retrieves the IDs of sets that have the maximum number of translations in Russian, grouped by base set size.)"
         },
         "final_check": true
     },
@@ -295,12 +325,14 @@
                 {
                     "id": 1,
                     "sql statement": "SELECT MAX(convertedManaCost) FROM foreign_data AS T1 INNER JOIN cards AS T2 ON T2.uuid = T1.uuid INNER JOIN sets AS T3 ON T3.code = T2.setCode WHERE T3.name = 'Coldsnap' AND T1.language = 'Italian'",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "Find the highest converted mana cost among cards from the set 'Coldsnap' that have Italian language data."
                 },
                 {
                     "id": 2,
                     "sql statement": "SELECT T2.name FROM foreign_data AS T1 INNER JOIN cards AS T2 ON T2.uuid = T1.uuid INNER JOIN sets AS T3 ON T3.code = T2.setCode WHERE T3.name = 'Coldsnap' AND T1.language = 'Italian' AND T2.convertedManaCost = (SELECT MAX(convertedManaCost) FROM foreign_data AS T1 INNER JOIN cards AS T2 ON T2.uuid = T1.uuid INNER JOIN sets AS T3 ON T3.code = T2.setCode WHERE T3.name = 'Coldsnap' AND T1.language = 'Italian')",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "Retrieve the names of cards from the set 'Coldsnap' with Italian language data that have the highest converted mana cost."
                 }
             ],
             "edges": [
@@ -308,7 +340,8 @@
                     "source": 1,
                     "target": 2
                 }
-            ]
+            ],
+            "nl": "1. (Find the highest converted mana cost among cards from the set 'Coldsnap' that have Italian language data.)\n2. (Retrieve the names of cards from the set 'Coldsnap' with Italian language data that have the highest converted mana cost.)"
         },
         "final_check": true
     },
@@ -324,12 +357,14 @@
                 {
                     "id": 1,
                     "sql statement": "SELECT MIN(originalReleaseDate) FROM cards AS T1 INNER JOIN legalities AS T2 ON T1.uuid = T2.uuid WHERE T1.rarity = 'mythic' AND T1.originalReleaseDate IS NOT NULL AND T2.status = 'Legal'",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "Find the earliest original release date of mythic rarity cards that are currently legal in any format."
                 },
                 {
                     "id": 2,
                     "sql statement": "SELECT T1.originalReleaseDate, T2.format FROM cards AS T1 INNER JOIN legalities AS T2 ON T1.uuid = T2.uuid WHERE T1.rarity = 'mythic' AND T1.originalReleaseDate IS NOT NULL AND T2.status = 'Legal' AND T1.originalReleaseDate = (SELECT MIN(originalReleaseDate) FROM cards AS T1 INNER JOIN legalities AS T2 ON T1.uuid = T2.uuid WHERE T1.rarity = 'mythic' AND T1.originalReleaseDate IS NOT NULL AND T2.status = 'Legal')",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "Retrieve the original release date and format for mythic rarity cards that are currently legal, specifically for the card with the earliest original release date among them."
                 }
             ],
             "edges": [
@@ -337,7 +372,8 @@
                     "source": 1,
                     "target": 2
                 }
-            ]
+            ],
+            "nl": "1. (Find the earliest original release date of mythic rarity cards that are currently legal in any format.)\n2. (Retrieve the original release date and format for mythic rarity cards that are currently legal, specifically for the card with the earliest original release date among them.)"
         },
         "final_check": true
     },
@@ -353,12 +389,14 @@
                 {
                     "id": 1,
                     "sql statement": "SELECT MAX(T4.CreationDate) FROM users AS T5 INNER JOIN posts AS T6 ON T5.Id = T6.OwnerUserId INNER JOIN comments AS T4 ON T6.Id = T4.PostId WHERE T6.Title = 'Analysing wind data with R'",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "Retrieve the most recent creation date of comments on posts with the title 'Analysing wind data with R'."
                 },
                 {
                     "id": 2,
                     "sql statement": "SELECT T3.Text, T1.DisplayName FROM users AS T1 INNER JOIN posts AS T2 ON T1.Id = T2.OwnerUserId INNER JOIN comments AS T3 ON T2.Id = T3.PostId WHERE T2.Title = 'Analysing wind data with R' AND T3.CreationDate = (SELECT MAX(T4.CreationDate) FROM users AS T5 INNER JOIN posts AS T6 ON T5.Id = T6.OwnerUserId INNER JOIN comments AS T4 ON T6.Id = T4.PostId WHERE T6.Title = 'Analysing wind data with R')",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "Fetch the text of the most recent comment and the display name of the user who owns the post titled 'Analysing wind data with R'."
                 }
             ],
             "edges": [
@@ -366,7 +404,8 @@
                     "source": 1,
                     "target": 2
                 }
-            ]
+            ],
+            "nl": "1. (Retrieve the most recent creation date of comments on posts with the title 'Analysing wind data with R'.)\n2. (Fetch the text of the most recent comment and the display name of the user who owns the post titled 'Analysing wind data with R'.)"
         },
         "final_check": true
     },
@@ -382,17 +421,20 @@
                 {
                     "id": 1,
                     "sql statement": "SELECT MIN(T4.attribute_value) FROM hero_attribute AS T4 INNER JOIN attribute AS T5 ON T4.attribute_id = T5.id WHERE T5.attribute_name = 'Intelligence'",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "Find the minimum intelligence value among all superheroes."
                 },
                 {
                     "id": 2,
                     "sql statement": "SELECT T1.superhero_name FROM superhero AS T1 INNER JOIN hero_attribute AS T2 ON T1.id = T2.hero_id INNER JOIN attribute AS T3 ON T2.attribute_id = T3.id WHERE T3.attribute_name = 'Intelligence'",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "Retrieve the names of all superheroes who have an intelligence attribute."
                 },
                 {
                     "id": 3,
                     "sql statement": "SELECT T1.superhero_name FROM superhero AS T1 INNER JOIN hero_attribute AS T2 ON T1.id = T2.hero_id INNER JOIN attribute AS T3 ON T2.attribute_id = T3.id WHERE T3.attribute_name = 'Intelligence' AND T2.attribute_value = (SELECT MIN(T4.attribute_value) FROM hero_attribute AS T4 INNER JOIN attribute AS T5 ON T4.attribute_id = T5.id WHERE T5.attribute_name = 'Intelligence')",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "Identify the superhero names with the lowest intelligence value among all superheroes."
                 }
             ],
             "edges": [
@@ -404,7 +446,8 @@
                     "source": 2,
                     "target": 3
                 }
-            ]
+            ],
+            "nl": "1. (Find the minimum intelligence value among all superheroes.)\n2. (Retrieve the names of all superheroes who have an intelligence attribute.)\n3. (Identify the superhero names with the lowest intelligence value among all superheroes.)"
         },
         "final_check": true
     },
@@ -420,17 +463,20 @@
                 {
                     "id": 1,
                     "sql statement": "SELECT MAX(T4.attribute_value) FROM hero_attribute AS T4 INNER JOIN attribute AS T5 ON T4.attribute_id = T5.id WHERE T5.attribute_name = 'Strength'",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "Find the maximum strength value among all superheroes."
                 },
                 {
                     "id": 2,
                     "sql statement": "SELECT T1.full_name FROM superhero AS T1 INNER JOIN hero_attribute AS T2 ON T1.id = T2.hero_id INNER JOIN attribute AS T3 ON T2.attribute_id = T3.id WHERE T3.attribute_name = 'Strength'",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "Retrieve the full names of all superheroes who have a strength attribute."
                 },
                 {
                     "id": 3,
                     "sql statement": "SELECT T1.full_name FROM superhero AS T1 INNER JOIN hero_attribute AS T2 ON T1.id = T2.hero_id INNER JOIN attribute AS T3 ON T2.attribute_id = T3.id WHERE T3.attribute_name = 'Strength' AND T2.attribute_value = (SELECT MAX(T4.attribute_value) FROM hero_attribute AS T4 INNER JOIN attribute AS T5 ON T4.attribute_id = T5.id WHERE T5.attribute_name = 'Strength')",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "Identify the full name of the superhero with the highest strength value."
                 }
             ],
             "edges": [
@@ -442,7 +488,8 @@
                     "source": 2,
                     "target": 3
                 }
-            ]
+            ],
+            "nl": "1. (Find the maximum strength value among all superheroes.)\n2. (Retrieve the full names of all superheroes who have a strength attribute.)\n3. (Identify the full name of the superhero with the highest strength value.)"
         },
         "final_check": true
     },
@@ -458,12 +505,14 @@
                 {
                     "id": 1,
                     "sql statement": "SELECT MAX(T5.attribute_value) FROM superhero AS T6 INNER JOIN hero_attribute AS T5 ON T6.id = T5.hero_id INNER JOIN publisher AS T7 ON T7.id = T6.publisher_id WHERE T7.publisher_name = 'Dark Horse Comics'",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "Find the maximum attribute value among all superheroes published by Dark Horse Comics."
                 },
                 {
                     "id": 2,
                     "sql statement": "SELECT T1.superhero_name FROM superhero AS T1 INNER JOIN hero_attribute AS T2 ON T1.id = T2.hero_id INNER JOIN attribute AS T3 ON T3.id = T2.attribute_id INNER JOIN publisher AS T4 ON T4.id = T1.publisher_id WHERE T4.publisher_name = 'Dark Horse Comics' AND T2.attribute_value = (SELECT MAX(T5.attribute_value) FROM superhero AS T6 INNER JOIN hero_attribute AS T5 ON T6.id = T5.hero_id INNER JOIN publisher AS T7 ON T7.id = T6.publisher_id WHERE T7.publisher_name = 'Dark Horse Comics')",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "Identify the superhero name from Dark Horse Comics who has the highest attribute value."
                 }
             ],
             "edges": [
@@ -471,7 +520,8 @@
                     "source": 1,
                     "target": 2
                 }
-            ]
+            ],
+            "nl": "1. (Find the maximum attribute value among all superheroes published by Dark Horse Comics.)\n2. (Identify the superhero name from Dark Horse Comics who has the highest attribute value.)"
         },
         "final_check": true
     },
@@ -487,17 +537,20 @@
                 {
                     "id": 1,
                     "sql statement": "SELECT MIN(T4.year) FROM races AS T4 INNER JOIN driverStandings AS T5 ON T5.raceId = T4.raceId INNER JOIN drivers AS T6 ON T6.driverId = T5.driverId WHERE T6.forename = 'Lewis' AND T6.surname = 'Hamilton'",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "Find the earliest year in which Lewis Hamilton participated in a race by joining the races, driver standings, and drivers tables."
                 },
                 {
                     "id": 2,
                     "sql statement": "SELECT T1.name, T2.points FROM races AS T1 INNER JOIN driverStandings AS T2 ON T2.raceId = T1.raceId INNER JOIN drivers AS T3 ON T3.driverId = T2.driverId WHERE T3.forename = 'Lewis' AND T3.surname = 'Hamilton'",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "Retrieve the names of races and the points scored by Lewis Hamilton in each race by joining the races, driver standings, and drivers tables."
                 },
                 {
                     "id": 3,
                     "sql statement": "SELECT T1.name, T2.points FROM races AS T1 INNER JOIN driverStandings AS T2 ON T2.raceId = T1.raceId INNER JOIN drivers AS T3 ON T3.driverId = T2.driverId WHERE T3.forename = 'Lewis' AND T3.surname = 'Hamilton' AND T1.year = (SELECT MIN(T4.year) FROM races AS T4 INNER JOIN driverStandings AS T5 ON T5.raceId = T4.raceId INNER JOIN drivers AS T6 ON T6.driverId = T5.driverId WHERE T6.forename = 'Lewis' AND T6.surname = 'Hamilton')",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "Get the names of races and the points scored by Lewis Hamilton in the earliest year he participated, by joining the races, driver standings, and drivers tables, and filtering for the minimum year of his participation."
                 }
             ],
             "edges": [
@@ -509,7 +562,8 @@
                     "source": 2,
                     "target": 3
                 }
-            ]
+            ],
+            "nl": "1. (Find the earliest year in which Lewis Hamilton participated in a race by joining the races, driver standings, and drivers tables.)\n2. (Retrieve the names of races and the points scored by Lewis Hamilton in each race by joining the races, driver standings, and drivers tables.)\n3. (Get the names of races and the points scored by Lewis Hamilton in the earliest year he participated, by joining the races, driver standings, and drivers tables, and filtering for the minimum year of his participation.)"
         },
         "final_check": true
     },
@@ -525,17 +579,20 @@
                 {
                     "id": 1,
                     "sql statement": "SELECT home_team_api_id, COUNT(*) AS lost_matches_count FROM Match WHERE season = '2015/2016' AND home_team_goal - away_team_goal < 0 GROUP BY home_team_api_id",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "Retrieve the home team API ID and the count of matches lost by each home team during the 2015/2016 season, where the home team scored fewer goals than the away team. Group the results by the home team API ID."
                 },
                 {
                     "id": 2,
                     "sql statement": "SELECT MIN(lost_matches_count) FROM (SELECT home_team_api_id, COUNT(*) AS lost_matches_count FROM Match WHERE season = '2015/2016' AND home_team_goal - away_team_goal < 0 GROUP BY home_team_api_id)",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "Find the minimum number of matches lost by any home team during the 2015/2016 season, where the home team scored fewer goals than the away team."
                 },
                 {
                     "id": 3,
                     "sql statement": "SELECT t3.team_long_name FROM Match AS t1 INNER JOIN Team AS t3 ON t1.home_team_api_id = t3.team_api_id WHERE t1.season = '2015/2016' AND t1.home_team_goal - t1.away_team_goal < 0 GROUP BY t1.home_team_api_id HAVING COUNT(*) = (SELECT MIN(lost_matches_count) FROM (SELECT home_team_api_id, COUNT(*) AS lost_matches_count FROM Match WHERE season = '2015/2016' AND home_team_goal - away_team_goal < 0 GROUP BY home_team_api_id))",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "Identify the long name of the team that lost the fewest home matches during the 2015/2016 season, where the home team scored fewer goals than the away team."
                 }
             ],
             "edges": [
@@ -547,7 +604,8 @@
                     "source": 2,
                     "target": 3
                 }
-            ]
+            ],
+            "nl": "1. Retrieve the home team API ID and the count of matches lost by each home team during the 2015/2016 season, where the home team scored fewer goals than the away team. Group the results by the home team API ID.\n\n2. Find the minimum number of matches lost by any home team during the 2015/2016 season, where the home team scored fewer goals than the away team.\n\n3. Identify the long name of the team that lost the fewest home matches during the 2015/2016 season, where the home team scored fewer goals than the away team."
         },
         "final_check": true
     },
@@ -563,17 +621,20 @@
                 {
                     "id": 1,
                     "sql statement": "SELECT away_team_api_id, COUNT(*) AS won_matches_count FROM Match AS m INNER JOIN League AS l ON m.league_id = l.id WHERE l.name = 'Scotland Premier League' AND m.season = '2009/2010' AND m.away_team_goal - m.home_team_goal > 0 GROUP BY m.away_team_api_id",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "Retrieve the IDs of away teams and the count of matches they won as the away team in the Scotland Premier League during the 2009/2010 season, where the away team scored more goals than the home team. Group the results by the away team ID."
                 },
                 {
                     "id": 2,
                     "sql statement": "SELECT MAX(won_matches_count) FROM (SELECT away_team_api_id, COUNT(*) AS won_matches_count FROM Match AS m INNER JOIN League AS l ON m.league_id = l.id WHERE l.name = 'Scotland Premier League' AND m.season = '2009/2010' AND m.away_team_goal - m.home_team_goal > 0 GROUP BY m.away_team_api_id)",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "Find the maximum number of matches won by any away team in the Scotland Premier League during the 2009/2010 season, where the away team scored more goals than the home team."
                 },
                 {
                     "id": 3,
                     "sql statement": "SELECT t3.team_long_name FROM League AS t1 INNER JOIN Match AS t2 ON t1.id = t2.league_id INNER JOIN Team AS t3 ON t2.away_team_api_id = t3.team_api_id WHERE t1.name = 'Scotland Premier League' AND t2.season = '2009/2010' AND t2.away_team_goal - t2.home_team_goal > 0 GROUP BY t2.away_team_api_id HAVING COUNT(*) = (SELECT MAX(won_matches_count) FROM (SELECT away_team_api_id, COUNT(*) AS won_matches_count FROM Match AS m INNER JOIN League AS l ON m.league_id = l.id WHERE l.name = 'Scotland Premier League' AND m.season = '2009/2010' AND m.away_team_goal - m.home_team_goal > 0 GROUP BY m.away_team_api_id))",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "Identify the full name of the team that won the most matches as the away team in the Scotland Premier League during the 2009/2010 season, where the away team scored more goals than the home team."
                 }
             ],
             "edges": [
@@ -585,7 +646,8 @@
                     "source": 2,
                     "target": 3
                 }
-            ]
+            ],
+            "nl": "1. Retrieve the IDs of away teams and the count of matches they won as the away team in the Scotland Premier League during the 2009/2010 season, where the away team scored more goals than the home team. Group the results by the away team ID.\n\n2. Find the maximum number of matches won by any away team in the Scotland Premier League during the 2009/2010 season, where the away team scored more goals than the home team.\n\n3. Identify the full name of the team that won the most matches as the away team in the Scotland Premier League during the 2009/2010 season, where the away team scored more goals than the home team."
         },
         "final_check": true
     },
@@ -601,12 +663,14 @@
                 {
                     "id": 1,
                     "sql statement": "SELECT MAX(LDH) FROM Laboratory WHERE LDH < 500",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "Find the highest LDH value from the Laboratory table where the LDH is less than 500."
                 },
                 {
                     "id": 2,
                     "sql statement": "SELECT T1.`First Date` FROM Patient AS T1 INNER JOIN Laboratory AS T2 ON T1.ID = T2.ID WHERE T2.LDH = (SELECT MAX(LDH) FROM Laboratory WHERE LDH < 500)",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "Retrieve the first date of patients whose laboratory record has the highest LDH value under 500."
                 }
             ],
             "edges": [
@@ -614,7 +678,8 @@
                     "source": 1,
                     "target": 2
                 }
-            ]
+            ],
+            "nl": "1. (Find the highest LDH value from the Laboratory table where the LDH is less than 500.)\n2. (Retrieve the first date of patients whose laboratory record has the highest LDH value under 500.)"
         },
         "final_check": true
     },
@@ -630,12 +695,14 @@
                 {
                     "id": 1,
                     "sql statement": "SELECT MAX(T4.amount) FROM member AS T3 INNER JOIN income AS T4 ON T3.member_id = T4.link_to_member",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "Retrieve the highest income amount recorded in the income table, linked to any member."
                 },
                 {
                     "id": 2,
                     "sql statement": "SELECT T1.first_name, T1.last_name, T2.source FROM member AS T1 INNER JOIN income AS T2 ON T1.member_id = T2.link_to_member WHERE T2.amount = (SELECT MAX(T4.amount) FROM member AS T3 INNER JOIN income AS T4 ON T3.member_id = T4.link_to_member)",
-                    "exec_res": "success"
+                    "exec_res": "success",
+                    "nl": "Find the first and last names of members along with the source of income for the member who received the highest income amount."
                 }
             ],
             "edges": [
@@ -643,7 +710,8 @@
                     "source": 1,
                     "target": 2
                 }
-            ]
+            ],
+            "nl": "1. (Retrieve the highest income amount recorded in the income table, linked to any member.)\n2. (Find the first and last names of members along with the source of income for the member who received the highest income amount.)"
         },
         "final_check": true
     }
