@@ -18,10 +18,8 @@ WHERE CustomerId IN (
         GROUP BY CustomerId
         ORDER BY InvoiceCount DESC
         LIMIT 1
-    ) AS top_customer
+    )
 );
-
-
     """
     conn = None
     try:

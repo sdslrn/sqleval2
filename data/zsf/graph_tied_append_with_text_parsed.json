@@ -358,13 +358,13 @@
                     "id": 1,
                     "sql statement": "SELECT MIN(originalReleaseDate) FROM cards AS T1 INNER JOIN legalities AS T2 ON T1.uuid = T2.uuid WHERE T1.rarity = 'mythic' AND T1.originalReleaseDate IS NOT NULL AND T2.status = 'Legal'",
                     "exec_res": "success",
-                    "nl": "Find the earliest original release date of mythic rarity cards that are currently legal in any format."
+                    "nl": "Find when was the oldest mythic card released."
                 },
                 {
                     "id": 2,
                     "sql statement": "SELECT T1.originalReleaseDate, T2.format FROM cards AS T1 INNER JOIN legalities AS T2 ON T1.uuid = T2.uuid WHERE T1.rarity = 'mythic' AND T1.originalReleaseDate IS NOT NULL AND T2.status = 'Legal' AND T1.originalReleaseDate = (SELECT MIN(originalReleaseDate) FROM cards AS T1 INNER JOIN legalities AS T2 ON T1.uuid = T2.uuid WHERE T1.rarity = 'mythic' AND T1.originalReleaseDate IS NOT NULL AND T2.status = 'Legal')",
                     "exec_res": "success",
-                    "nl": "Retrieve the original release date and format for mythic rarity cards that are currently legal, specifically for the card with the earliest original release date among them."
+                    "nl": "Find when was the oldest mythic card released and what are its legal play formats."
                 }
             ],
             "edges": [
@@ -396,7 +396,7 @@
                     "id": 2,
                     "sql statement": "SELECT T3.Text, T1.DisplayName FROM users AS T1 INNER JOIN posts AS T2 ON T1.Id = T2.OwnerUserId INNER JOIN comments AS T3 ON T2.Id = T3.PostId WHERE T2.Title = 'Analysing wind data with R' AND T3.CreationDate = (SELECT MAX(T4.CreationDate) FROM users AS T5 INNER JOIN posts AS T6 ON T5.Id = T6.OwnerUserId INNER JOIN comments AS T4 ON T6.Id = T4.PostId WHERE T6.Title = 'Analysing wind data with R')",
                     "exec_res": "success",
-                    "nl": "Fetch the text of the most recent comment and the display name of the user who owns the post titled 'Analysing wind data with R'."
+                    "nl": "Provide the text of the latest comment to the post with the title 'Analysing wind data with R' and the display name of the user who left it."
                 }
             ],
             "edges": [
@@ -696,7 +696,7 @@
                     "id": 1,
                     "sql statement": "SELECT MAX(T4.amount) FROM member AS T3 INNER JOIN income AS T4 ON T3.member_id = T4.link_to_member",
                     "exec_res": "success",
-                    "nl": "Retrieve the highest income amount recorded in the income table, linked to any member."
+                    "nl": "Retrieve the highest income amount recorded in the income table,"
                 },
                 {
                     "id": 2,
