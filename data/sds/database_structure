@@ -104,10 +104,3 @@ prereq	CREATE TABLE prereq
 		on delete cascade,
 	 foreign key (prereq_id) references course
 	)
-
-将所有在2023年秋季学期成绩为'F'的学生成绩改为'Incomplete'。
-UPDATE takes SET grade = 'Incomplete' WHERE grade = 'F' AND year = 2023 AND semester = 'Fall';
-
-删除2023年春季学期在'Watson'大楼上课但没有学生注册的课程分区。
-DELETE FROM section WHERE building = 'Watson' AND year = 2023 AND semester = 'Spring' AND (course_id, sec_id) NOT IN (SELECT course_id, sec_id FROM takes);
-

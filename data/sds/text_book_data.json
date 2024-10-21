@@ -1,0 +1,296 @@
+[
+    {
+        "描述（中文）": "将所有在'Smith'楼101房间上课的课程的教师更改为'David Brown'。",
+        "描述（英文）": "Update the instructors of all courses held in room 101 of the 'Smith' building to 'David Brown'.",
+        "sql语句": "UPDATE teaches SET ID = (SELECT ID FROM instructor WHERE name = 'David Brown') WHERE (course_id, sec_id, semester, year) IN (SELECT course_id, sec_id, semester, year FROM section WHERE building = 'Smith' AND room_number = '101');",
+        "exec_res": "success"
+    },
+    {
+        "描述（中文）": "将所有在2023年春季学期通过了'CS-101'课程且成绩为'A'的学生总学分增加3分。",
+        "描述（英文）": "Increase the total credits by 3 for all students who passed the 'CS-101' course with an 'A' grade in the Spring semester of 2023.",
+        "sql语句": "UPDATE student SET tot_cred = tot_cred + 3 WHERE ID IN (SELECT ID FROM takes WHERE course_id = 'CS-101' AND semester = 'Spring' AND year = 2023 AND grade = 'A');",
+        "exec_res": "success"
+    },
+    {
+        "描述（中文）": "将所有薪资高于70,000美元的教师所属系改为他们教授的课程的系。",
+        "sql语句": "UPDATE instructor SET dept_name = (SELECT dept_name FROM course WHERE course_id = (SELECT course_id FROM teaches WHERE teaches.ID = instructor.ID LIMIT 1)) WHERE salary > 70000;",
+        "exec_res": "success",
+        "描述（英文）": "Update the department of all instructors with a salary greater than $70,000 to match the department of the courses they teach."
+    },
+    {
+        "描述（中文）": "将2024年春季学期所有课程的教室改为'Main'楼201号房间，前提是课程当前没有分配教室。",
+        "sql语句": "UPDATE section SET building = 'Main', room_number = '201' WHERE year = 2024 AND semester = 'Spring' AND (building IS NULL OR room_number IS NULL);",
+        "exec_res": "success",
+        "描述（英文）": "Change the classroom of all courses in the Spring semester of 2024 to room 201 in the 'Main' building, provided the courses are not currently assigned a classroom."
+    },
+    {
+        "描述（中文）": "将所有音乐系学生的导师更改为音乐系的导师（选1个），前提是导师为空。",
+        "sql语句": "UPDATE advisor SET i_ID = (SELECT ID FROM instructor WHERE dept_name = 'Music' LIMIT 1) WHERE s_ID IN (SELECT ID FROM student WHERE dept_name = 'Music') AND i_ID IS NULL;",
+        "exec_res": "success",
+        "描述（英文）": "Update the advisor for all Music department students to a Music department instructor (select one), provided the advisor is currently unassigned."
+    },
+    {
+        "描述（中文）": "将所有预算低于$100,000的系的所有教师的薪资提高5%。",
+        "sql语句": "UPDATE instructor SET salary = salary * 1.05 WHERE dept_name IN (SELECT dept_name FROM department WHERE budget < 100000);",
+        "exec_res": "success",
+        "描述（英文）": "Increase the salary of all instructors by 5% in departments with a budget of less than $100,000."
+    },
+    {
+        "描述（中文）": "将2022年秋季学期成绩为'B'的所有学生成绩更新为'B+'。",
+        "sql语句": "UPDATE takes SET grade = 'B+' WHERE grade = 'B' AND year = 2022 AND semester = 'Fall';",
+        "exec_res": "success",
+        "描述（英文）": "Update the grades of all students who received a 'B' in the Fall semester of 2022 to 'B+'."
+    },
+    {
+        "描述（中文）": "将所有教授'CS-101'课程且没有导师的学生设置为'Dr. Jane Doe'为导师。",
+        "sql语句": "UPDATE advisor SET i_ID = (SELECT ID FROM instructor WHERE name = 'Dr. Jane Doe') WHERE s_ID IN (SELECT ID FROM takes WHERE course_id = 'CS-101') AND i_ID IS NULL;",
+        "exec_res": "success",
+        "描述（英文）": "Assign 'Dr. Jane Doe' as the advisor for all students taking the 'CS-101' course who currently do not have an advisor."
+    },
+    {
+        "描述（中文）": "将2023年春季学期在'Watson'大楼上课的所有课程的教室改为'North'大楼301号房间。",
+        "sql语句": "UPDATE section SET building = 'North', room_number = '301' WHERE year = 2023 AND semester = 'Spring' AND building = 'Watson';",
+        "exec_res": "success",
+        "描述（英文）": "Change the classroom of all courses held in the 'Watson' building during the Spring semester of 2023 to room 301 in the 'North' building."
+    },
+    {
+        "描述（中文）": "将所有在'CS-437'课程中获得'A'的学生的学分增加3分。",
+        "sql语句": "UPDATE student SET tot_cred = tot_cred + 3 WHERE ID IN (SELECT ID FROM takes WHERE course_id = 'CS-437' AND grade = 'A');",
+        "exec_res": "success",
+        "描述（英文）": "Increase the total credits by 3 for all students who received an 'A' in the 'CS-437' course."
+    },
+    {
+        "描述（中文）": "将所有工资低于$30,000的教师的系改为他们上次教授的课程的系。",
+        "sql语句": "UPDATE instructor SET dept_name = (SELECT dept_name FROM course WHERE course_id = (SELECT course_id FROM teaches WHERE teaches.ID = instructor.ID LIMIT 1)) WHERE salary < 30000;",
+        "exec_res": "success",
+        "描述（英文）": "Update the department of all instructors with a salary less than $30,000 to the department of the last course they taught."
+    },
+    {
+        "描述（中文）": "将所有在2023年秋季学期成绩为'F'的学生成绩改为'Incomplete'。",
+        "sql语句": "UPDATE takes SET grade = 'Incomplete' WHERE grade = 'F' AND year = 2023 AND semester = 'Fall';",
+        "exec_res": "success",
+        "描述（英文）": "Change the grades of all students who received an 'F' in the Fall semester of 2023 to 'Incomplete'."
+    },
+    {
+        "描述（中文）": "删除所有从未有学生参加的先决条件课程。",
+        "sql语句": "DELETE FROM prereq WHERE course_id NOT IN (SELECT course_id FROM takes);",
+        "exec_res": "success",
+        "描述（英文）": "Delete all prerequisite courses that have never been taken by any students."
+    },
+    {
+        "描述（中文）": "删除没有教室分配的所有2023年秋季学期课程分区。",
+        "sql语句": "DELETE FROM section WHERE semester = 'Fall' AND year = 2023 AND (building IS NULL OR room_number IS NULL);",
+        "exec_res": "success",
+        "描述（英文）": "Delete all course sections from the Fall semester of 2023 that do not have an assigned classroom."
+    },
+    {
+        "描述（中文）": "删除所有工资低于50,000美元并且没有教授课程的教师。",
+        "sql语句": "DELETE FROM instructor WHERE salary < 50000 AND ID NOT IN (SELECT ID FROM teaches);",
+        "exec_res": "success",
+        "描述（英文）": "Delete all instructors with a salary less than $50,000 who have not taught any courses."
+    },
+    {
+        "描述（中文）": "删除所有没有导师的学生记录。",
+        "sql语句": "DELETE FROM student WHERE ID NOT IN (SELECT s_ID FROM advisor);",
+        "exec_res": "success",
+        "描述（英文）": "Delete all student records for students who do not have an advisor."
+    },
+    {
+        "描述（中文）": "删除所有在2023年春季学期没有选课的学生的导师记录。",
+        "sql语句": "DELETE FROM advisor WHERE s_ID NOT IN (SELECT ID FROM takes WHERE year = 2023 AND semester = 'Spring');",
+        "exec_res": "success",
+        "描述（英文）": "Delete all advisor records for students who did not enroll in any courses in the Spring semester of 2023."
+    },
+    {
+        "描述（中文）": "删除2024年所有工资低于30,000美元的教师所教授的课程。",
+        "sql语句": "DELETE FROM teaches WHERE ID IN (SELECT ID FROM instructor WHERE salary < 30000) AND year = 2024;",
+        "exec_res": "success",
+        "描述（英文）": "Delete all courses taught by instructors with a salary less than $30,000 in the year 2024."
+    },
+    {
+        "描述（中文）": "删除所有从未开设的课程的记录。",
+        "sql语句": "DELETE FROM course WHERE course_id NOT IN (SELECT course_id FROM section);",
+        "exec_res": "success",
+        "描述（英文）": "Delete all course records that have never been offered."
+    },
+    {
+        "描述（中文）": "删除2022年秋季学期没有获得成绩的所有学生的选课记录。",
+        "sql语句": "DELETE FROM takes WHERE year = 2022 AND semester = 'Fall' AND grade IS NULL;",
+        "exec_res": "success",
+        "描述（英文）": "Delete the enrollment records of all students who did not receive a grade in the Fall semester of 2022."
+    },
+    {
+        "描述（中文）": "删除所有当前没有注册任何课程的学生记录。",
+        "sql语句": "DELETE FROM student WHERE ID NOT IN (SELECT ID FROM takes);",
+        "exec_res": "success",
+        "描述（英文）": "Delete all student records for students who are not currently enrolled in any courses."
+    },
+    {
+        "描述（中文）": "删除所有没有指定导师的音乐系学生的导师记录。",
+        "sql语句": "DELETE FROM advisor WHERE s_ID IN (SELECT ID FROM student WHERE dept_name = 'Music') AND i_ID IS NULL;",
+        "exec_res": "success",
+        "描述（英文）": "Delete all advisor records for Music department students who do not have an assigned advisor."
+    },
+    {
+        "描述（中文）": "删除2023年春季学期在'Watson'大楼上课但没有学生注册的课程分区。",
+        "sql语句": "DELETE FROM section WHERE building = 'Watson' AND year = 2023 AND semester = 'Spring' AND (course_id, sec_id) NOT IN (SELECT course_id, sec_id FROM takes);",
+        "exec_res": "success",
+        "描述（英文）": "Delete all course sections held in the 'Watson' building during the Spring semester of 2023 that have no student enrollment."
+    },
+    {
+        "描述（中文）": "删除所有没有先决条件的课程记录。",
+        "sql语句": "DELETE FROM course WHERE course_id NOT IN (SELECT course_id FROM prereq);",
+        "exec_res": "success",
+        "描述（英文）": "Delete all course records that do not have any prerequisites."
+    },
+    {
+        "描述（中文）": "插入每个没有导师的音乐系学生与'Music'系主任的导师关系。",
+        "sql语句": "INSERT INTO advisor (s_ID, i_ID) SELECT student.ID, instructor.ID FROM student, instructor WHERE student.dept_name = 'Music' AND instructor.dept_name = 'Music' AND student.ID NOT IN (SELECT s_ID FROM advisor);",
+        "exec_res": "success",
+        "描述（英文）": "Insert an advisor relationship for each Music department student without an advisor, assigning the department chair of the Music department as their advisor."
+    },
+    {
+        "描述（中文）": "将预算大于500,000美元的所有系的课程作为先决条件插入到新课程'CS-999'中。",
+        "sql语句": "INSERT INTO prereq (course_id, prereq_id) SELECT 'CS-999', course.course_id FROM course, department WHERE course.dept_name = department.dept_name AND department.budget > 500000;",
+        "exec_res": "success",
+        "描述（英文）": "Insert all courses from departments with a budget greater than $500,000 as prerequisites for the new course 'CS-999'."
+    },
+    {
+        "描述（中文）": "将所有在'North'大楼上课的课程分区插入到2024年春季学期的新教室'Main'楼301房间中。",
+        "sql语句": "INSERT INTO section (course_id, sec_id, semester, year, building, room_number, time_slot_id) SELECT course_id, sec_id, 'Spring', 2024, 'Main', '301', time_slot_id FROM section WHERE building = 'North';",
+        "exec_res": "success",
+        "描述（英文）": "Insert all course sections held in the 'North' building into a new classroom, room 301 in the 'Main' building, for the Spring semester of 2024."
+    },
+    {
+        "描述（中文）": "为所有没有选修任何课程且总学分超过120分的学生创建导师记录，导师为他们系里的教师中薪资最高的教师。",
+        "sql语句": "INSERT INTO advisor (s_ID, i_ID) SELECT student.ID, instructor.ID FROM student, instructor WHERE student.dept_name = instructor.dept_name AND student.tot_cred > 120 AND student.ID NOT IN (SELECT ID FROM takes) ORDER BY instructor.salary DESC LIMIT 1;",
+        "exec_res": "success",
+        "描述（英文）": "Create advisor records for all students who are not enrolled in any courses and have more than 120 total credits, assigning the highest-paid instructor from their department as their advisor."
+    },
+    {
+        "描述（中文）": "插入所有未获得成绩的'CS-101'学生到新的'CS-102'课程中，并将成绩设为NULL。",
+        "sql语句": "INSERT INTO takes (ID, course_id, sec_id, semester, year, grade) SELECT ID, 'CS-102', '1', 'Spring', 2024, NULL FROM takes WHERE course_id = 'CS-101' AND grade IS NULL;",
+        "exec_res": "success",
+        "描述（英文）": "Insert all students who have not received a grade in 'CS-101' into the new 'CS-102' course, and set their grade to NULL."
+    },
+    {
+        "描述（中文）": "将所有'CS-437'课程的先决条件课程插入到'CS-500'课程的先决条件中。",
+        "sql语句": "INSERT INTO prereq (course_id, prereq_id) SELECT 'CS-500', prereq_id FROM prereq WHERE course_id = 'CS-437';",
+        "exec_res": "success",
+        "描述（英文）": "Insert all prerequisite courses of the 'CS-437' course as prerequisites for the 'CS-500' course."
+    },
+    {
+        "描述（中文）": "为所有音乐系没有修满144学分的学生创建新课程注册记录，课程为'Music Theory'，学分设为3，成绩为空。",
+        "sql语句": "INSERT INTO takes (ID, course_id, sec_id, semester, year, grade) SELECT ID, 'MUS-201', '1', 'Spring', 2024, NULL FROM student WHERE dept_name = 'Music' AND tot_cred < 144;",
+        "exec_res": "success",
+        "描述（英文）": "Create new course enrollment records for all Music department students who have not completed 144 credits. The course is 'Music Theory' with 3 credits, and the grade is set to NULL."
+    },
+    {
+        "描述（中文）": "将所有2023年在'CS-101'课程获得B及以上成绩的学生插入到2024年春季学期的高级课程中。",
+        "sql语句": "INSERT INTO takes (ID, course_id, sec_id, semester, year) SELECT ID, 'CS-201', '1', 'Spring', 2024 FROM takes WHERE course_id = 'CS-101' AND year = 2023 AND grade IN ('A', 'B');",
+        "exec_res": "success",
+        "描述（英文）": "Insert all students who received a grade of B or higher in the 'CS-101' course in 2023 into the advanced course for the Spring semester of 2024."
+    },
+    {
+        "描述（中文）": "将所有教授'CS-101'的教师插入为'CS-201'课程的教师，且保持相同的分区编号。",
+        "sql语句": "INSERT INTO teaches (ID, course_id, sec_id, semester, year) SELECT ID, 'CS-201', sec_id, semester, year FROM teaches WHERE course_id = 'CS-101';",
+        "exec_res": "success",
+        "描述（英文）": "Insert all instructors who teach 'CS-101' as instructors for the 'CS-201' course, retaining the same section numbers."
+    },
+    {
+        "描述（中文）": "为所有2023年在'Spring'学期中教授课程的教师，插入一个他们2024年将在同一时间段教授相同课程的记录。",
+        "sql语句": "INSERT INTO teaches (ID, course_id, sec_id, semester, year) SELECT ID, course_id, sec_id, 'Spring', 2024 FROM teaches WHERE year = 2023 AND semester = 'Spring';",
+        "exec_res": "success",
+        "描述（英文）": "Insert records for all instructors who taught courses in the Spring semester of 2023, indicating that they will teach the same courses in the same time slots in the Spring semester of 2024."
+    },
+    {
+        "描述（中文）": "将所有系预算大于200,000美元且没有教室的课程插入到'Watson'大楼的教室中。",
+        "sql语句": "INSERT INTO section (course_id, sec_id, semester, year, building, room_number, time_slot_id) SELECT course_id, sec_id, 'Spring', 2024, 'Watson', '101', 'A1' FROM section WHERE building IS NULL AND course_id IN (SELECT course_id FROM course WHERE dept_name IN (SELECT dept_name FROM department WHERE budget > 200000));",
+        "exec_res": "success",
+        "描述（英文）": "Insert all courses from departments with a budget greater than $200,000 that do not have an assigned classroom into a classroom in the 'Watson' building."
+    },
+    {
+        "描述（中文）": "插入所有'CS-500'课程的学生为'CS-501'课程的学生，成绩设置为空。",
+        "sql语句": "INSERT INTO takes (ID, course_id, sec_id, semester, year, grade) SELECT ID, 'CS-501', sec_id, 'Spring', 2024, NULL FROM takes WHERE course_id = 'CS-500';",
+        "exec_res": "success",
+        "描述（英文）": "Insert all students enrolled in the 'CS-500' course as students in the 'CS-501' course, with their grades set to NULL."
+    },
+    {
+        "描述（中文）": "查询2023年秋季学期所有课程的教师姓名、课程名称和所在教室的容量。",
+        "sql语句": "SELECT instructor.name, course.title, classroom.capacity FROM teaches JOIN instructor ON teaches.ID = instructor.ID JOIN course ON teaches.course_id = course.course_id JOIN section ON teaches.course_id = section.course_id AND teaches.sec_id = section.sec_id JOIN classroom ON section.building = classroom.building AND section.room_number = classroom.room_number WHERE section.semester = 'Fall' AND section.year = 2023;",
+        "exec_res": "success",
+        "描述（英文）": "Query the instructor names, course titles, and the capacity of the classrooms for all courses in the Fall semester of 2023."
+    },
+    {
+        "描述（中文）": "查询所有薪资高于教师平均工资的教师姓名和他们教授的课程数。",
+        "sql语句": "SELECT instructor.name, COUNT(teaches.course_id) AS course_count FROM instructor JOIN teaches ON instructor.ID = teaches.ID WHERE instructor.salary > (SELECT AVG(salary) FROM instructor) GROUP BY instructor.name;",
+        "exec_res": "success",
+        "描述（英文）": "Query the names of all instructors with a salary higher than the average salary of instructors and the number of courses they teach."
+    },
+    {
+        "描述（中文）": "查询所有在'Watson'大楼上课的系中，课程学分总和大于10的系名和课程总数。",
+        "sql语句": "SELECT department.dept_name, COUNT(course.course_id) AS total_courses FROM department JOIN course ON department.dept_name = course.dept_name JOIN section ON course.course_id = section.course_id WHERE section.building = 'Watson' GROUP BY department.dept_name HAVING SUM(course.credits) > 10;",
+        "exec_res": "success",
+        "描述（英文）": "Query the names of all departments that hold classes in the 'Watson' building, where the total course credits exceed 10, along with the total number of courses offered."
+    },
+    {
+        "描述（中文）": "查询每个系薪资最高的教师姓名、其所属系名以及薪资。",
+        "sql语句": "SELECT instructor.name, instructor.dept_name, instructor.salary FROM instructor WHERE salary = (SELECT MAX(salary) FROM instructor AS i WHERE i.dept_name = instructor.dept_name);",
+        "exec_res": "success",
+        "描述（英文）": "Query the name of the highest-paid instructor in each department, along with their department name and salary."
+    },
+    {
+        "描述（中文）": "查询所有学生的姓名、导师姓名以及他们所修学分大于120的课程名称。",
+        "sql语句": "SELECT student.name AS student_name, instructor.name AS advisor_name, course.title AS course_title FROM student JOIN advisor ON student.ID = advisor.s_ID JOIN instructor ON advisor.i_ID = instructor.ID JOIN takes ON student.ID = takes.ID JOIN course ON takes.course_id = course.course_id WHERE student.tot_cred > 120;",
+        "exec_res": "success",
+        "描述（英文）": "Query the names of all students, their advisor's name, and the titles of the courses they are enrolled in where they have completed more than 120 credits."
+    },
+    {
+        "描述（中文）": "查询所有2024年春季学期教授课程的教师，按他们教授的课程数量进行排序。",
+        "sql语句": "SELECT instructor.name, COUNT(teaches.course_id) AS num_courses FROM instructor JOIN teaches ON instructor.ID = teaches.ID WHERE teaches.year = 2024 AND teaches.semester = 'Spring' GROUP BY instructor.name ORDER BY num_courses DESC;",
+        "exec_res": "success",
+        "描述（英文）": "Query all instructors teaching courses in the Spring semester of 2024, ordered by the number of courses they teach."
+    },
+    {
+        "描述（中文）": "查询所有开设了先决条件课程的课程名称以及其先决条件课程的名称。",
+        "sql语句": "SELECT course.title AS course_title, prereq_course.title AS prereq_title FROM prereq JOIN course ON prereq.course_id = course.course_id JOIN course AS prereq_course ON prereq.prereq_id = prereq_course.course_id;",
+        "exec_res": "success",
+        "描述（英文）": "Query the titles of all courses that have prerequisite courses, along with the titles of their prerequisite courses."
+    },
+    {
+        "描述（中文）": "查询所有从未选修过课程的学生姓名。",
+        "sql语句": "SELECT student.name FROM student WHERE student.ID NOT IN (SELECT ID FROM takes);",
+        "exec_res": "success",
+        "描述（英文）": "Query the names of all students who have never enrolled in any courses."
+    },
+    {
+        "描述（中文）": "查询每个学期学生选修最多的课程名称和学期。",
+        "sql语句": "SELECT takes.semester, takes.year, course.title, COUNT(takes.ID) AS num_students FROM takes JOIN course ON takes.course_id = course.course_id GROUP BY takes.semester, takes.year, course.title ORDER BY num_students DESC LIMIT 1;",
+        "exec_res": "success",
+        "描述（英文）": "Query the course title and semester for the course with the highest student enrollment in each semester."
+    },
+    {
+        "描述（中文）": "查询所有2023年秋季学期同时教授多个课程的教师姓名以及他们的课程ID。",
+        "sql语句": "SELECT instructor.name, teaches.course_id FROM teaches JOIN instructor ON teaches.ID = instructor.ID WHERE teaches.year = 2023 AND teaches.semester = 'Fall' GROUP BY instructor.name, teaches.course_id HAVING COUNT(teaches.course_id) > 1;",
+        "exec_res": "success",
+        "描述（英文）": "Query the names of all instructors who taught multiple courses in the Fall semester of 2023, along with their course IDs."
+    },
+    {
+        "描述（中文）": "查询每个系总课程数大于5且教师平均薪资超过60,000美元的系名及其课程数。",
+        "sql语句": "SELECT department.dept_name, COUNT(course.course_id) AS total_courses FROM department JOIN course ON department.dept_name = course.dept_name JOIN instructor ON department.dept_name = instructor.dept_name GROUP BY department.dept_name HAVING COUNT(course.course_id) > 5 AND AVG(instructor.salary) > 60000;",
+        "exec_res": "success",
+        "描述（英文）": "Query the names of departments that offer more than 5 courses and have an average instructor salary greater than $60,000, along with the total number of courses they offer."
+    },
+    {
+        "描述（中文）": "查询每个学期的每个课程中获得'A'的学生人数，并按学期和课程排序。",
+        "sql语句": "SELECT takes.semester, takes.year, course.title, COUNT(takes.ID) AS num_A_students FROM takes JOIN course ON takes.course_id = course.course_id WHERE takes.grade = 'A' GROUP BY takes.semester, takes.year, course.title ORDER BY takes.semester, takes.year, course.title;",
+        "exec_res": "success",
+        "描述（英文）": "Query the number of students who received an 'A' in each course for each semester, sorted by semester and course."
+    },
+    {
+        "描述（中文）": "查询所有2023年秋季学期在'Watson'大楼上课但没有指定教室的课程分区的课程ID和分区ID。",
+        "sql语句": "SELECT section.course_id, section.sec_id FROM section WHERE section.semester = 'Fall' AND section.year = 2023 AND section.building = 'Watson' AND (section.room_number IS NULL OR section.room_number = '');",
+        "exec_res": "success",
+        "描述（英文）": "Query the course IDs and section IDs of all course sections held in the 'Watson' building during the Fall semester of 2023 that do not have an assigned classroom."
+    }
+]
