@@ -1,0 +1,146 @@
+[
+    {
+        "id": "1",
+        "sql": "SELECT Title, Name FROM albums INNER JOIN artists USING (ArtistId);"
+    },
+    {
+        "id": "2",
+        "sql": "SELECT m.firstname || ' ' || m.lastname AS 'Manager',\n       e.firstname || ' ' || e.lastname AS 'Direct report' \nFROM employees e\nINNER JOIN employees m ON m.employeeid = e.reportsto\nORDER BY manager;"
+    },
+    {
+        "id": "3",
+        "sql": "SELECT DISTINCT\n e1.city,\n e1.firstName || ' ' || e1.lastname AS fullname\nFROM\n employees e1\nINNER JOIN employees e2 ON e2.city = e1.city \n   AND (e1.firstname <> e2.firstname AND e1.lastname <> e2.lastname)\nORDER BY\n e1.city;"
+    },
+    {
+        "id": "4",
+        "sql": "SELECT trackid,\n       name,\n       albumid\nFROM tracks\nWHERE albumid = (\n   SELECT albumid\n   FROM albums\n   WHERE title = 'Let There Be Rock'\n);"
+    },
+    {
+        "id": "5",
+        "sql": "SELECT customerid,\n       firstname,\n       lastname\n  FROM customers\n WHERE supportrepid IN (\n           SELECT employeeid\n             FROM employees\n            WHERE country = 'Canada'\n       );\n"
+    },
+    {
+        "id": "6",
+        "sql": "SELECT albumid,\n       title\n  FROM albums\n WHERE 10000000 > (\n                      SELECT sum(bytes) \n                        FROM tracks\n                       WHERE tracks.AlbumId = albums.AlbumId\n                  )\n ORDER BY title;"
+    },
+    {
+        "id": "7",
+        "sql": "SELECT albumid,\n       title,\n       (\n           SELECT count(trackid) \n             FROM tracks\n            WHERE tracks.AlbumId = albums.AlbumId\n       )\n       tracks_count\n  FROM albums\n ORDER BY tracks_count DESC;"
+    },
+    {
+        "id": "8",
+        "sql": "SELECT\n    CustomerId,\n    FirstName,\n    LastName,\n    Company\nFROM\n    Customers c\nWHERE\n    EXISTS (\n        SELECT \n            1 \n        FROM \n            Invoices\n        WHERE \n            CustomerId = c.CustomerId\n    )\nORDER BY\n    FirstName,\n    LastName; \n"
+    },
+    {
+        "id": "9",
+        "sql": "WITH top_tracks AS (\n    SELECT trackid, name\n    FROM tracks\n    ORDER BY trackid\n    LIMIT 5\n)\nSELECT * FROM top_tracks;"
+    },
+    {
+        "id": "10",
+        "sql": "WITH customer_sales AS (\n    SELECT c.customerid,\n           c.firstname || ' ' || c.lastname AS customer_name,\n           ROUND(SUM(ii.unitprice * ii.quantity),2) AS total_sales\n    FROM customers c\n    INNER JOIN invoices i ON c.customerid = i.customerid\n    INNER JOIN invoice_items ii ON i.invoiceid = ii.invoiceid\n    GROUP BY c.customerid\n)\nSELECT customer_name, total_sales \nFROM customer_sales\nORDER BY total_sales DESC, customer_name\nLIMIT 5;"
+    },
+    {
+        "id": "11",
+        "sql": "SELECT customerid,\n       firstname,\n       lastname,\n       CASE country \n           WHEN 'USA' \n               THEN 'Domestic' \n           ELSE 'Foreign' \n       END CustomerGroup\nFROM \n    customers\nORDER BY \n    LastName,\n    FirstName;"
+    },
+    {
+        "id": "12",
+        "sql": "INSERT INTO artists_backup \nSELECT ArtistId, Name\nFROM artists;"
+    },
+    {
+        "id": "13",
+        "sql": "UPDATE employees\nSET email = LOWER(\n firstname || \".\" || lastname || \"@chinookcorp.com\"\n)\nORDER BY\n firstname\nLIMIT 1;"
+    },
+    {
+        "id": "14",
+        "sql": "UPDATE tracks SET UnitPrice = ( SELECT AVG(UnitPrice) FROM tracks AS t2 WHERE t2.GenreId = tracks.GenreId ) WHERE GenreId IS NOT NULL;"
+    },
+    {
+        "id": "15",
+        "sql": "UPDATE tracks\nSET UnitPrice = (\n  SELECT MAX(UnitPrice)\n  FROM tracks AS t2\n  WHERE t2.AlbumId = tracks.AlbumId\n)\nWHERE AlbumId IS NOT NULL;"
+    },
+    {
+        "id": "16",
+        "sql": "UPDATE playlists\nSET Name = 'Mixed Genre'\nWHERE PlaylistId IN (\n  SELECT pt.PlaylistId\n  FROM playlist_track pt\n  JOIN tracks t ON pt.TrackId = t.TrackId\n  GROUP BY pt.PlaylistId\n  HAVING COUNT(DISTINCT t.GenreId) > 1\n);"
+    },
+    {
+        "id": "17",
+        "sql": "UPDATE genres\nSET Name = 'Misc'\nWHERE GenreId IN (\n  SELECT GenreId\n  FROM tracks\n  GROUP BY GenreId\n  HAVING COUNT(*) < 10\n);"
+    },
+    {
+        "id": "18",
+        "sql": "UPDATE invoices\nSET InvoiceDate = (\n  SELECT MAX(InvoiceDate)\n  FROM invoices AS inv2\n  WHERE inv2.CustomerId = invoices.CustomerId\n)\nWHERE InvoiceDate < (\n  SELECT MAX(InvoiceDate)\n  FROM invoices AS inv2\n  WHERE inv2.CustomerId = invoices.CustomerId\n);"
+    },
+    {
+        "id": "19",
+        "sql": "UPDATE invoice_items\nSET UnitPrice = (\n  SELECT UnitPrice * 1.2\n  FROM tracks\n  WHERE tracks.TrackId = invoice_items.TrackId\n    AND tracks.GenreId = (SELECT GenreId FROM genres WHERE Name = 'Rock')\n)\nWHERE TrackId IN (\n  SELECT TrackId\n  FROM tracks\n  WHERE GenreId = (SELECT GenreId FROM genres WHERE Name = 'Rock')\n);"
+    },
+    {
+        "id": "20",
+        "sql": "UPDATE customers\nSET Fax = Phone\nWHERE Fax IS NULL\n  AND Email LIKE '%@gmail.com';\n"
+    },
+    {
+        "id": "21",
+        "sql": "UPDATE employees\nSET ReportsTo = (\n  SELECT EmployeeId\n  FROM employees AS boss\n  WHERE boss.Country = employees.Country\n  ORDER BY HireDate ASC\n  LIMIT 1\n)\nWHERE ReportsTo IS NULL;\n"
+    },
+    {
+        "id": "22",
+        "sql": "UPDATE albums\nSET Title = Title || ' - Greatest Hits'\nWHERE AlbumId IN (\n  SELECT AlbumId\n  FROM tracks\n  GROUP BY AlbumId\n  HAVING COUNT(*) > 20\n)\nAND Title NOT LIKE '%Greatest Hits%';"
+    },
+    {
+        "id": "23",
+        "sql": "UPDATE tracks\nSET Composer = 'Various Artists'\nWHERE Composer IS NULL\n  AND TrackId IN (\n    SELECT TrackId\n    FROM playlist_track\n    GROUP BY TrackId\n    HAVING COUNT(PlaylistId) > 1\n);\n"
+    },
+    {
+        "id": "24",
+        "sql": "UPDATE customers\nSET PostalCode = (\n  SELECT PostalCode\n  FROM employees\n  WHERE employees.EmployeeId = customers.SupportRepId\n    AND employees.City = customers.City\n)\nWHERE PostalCode IS NULL\n  AND SupportRepId IS NOT NULL;"
+    },
+    {
+        "id": "25",
+        "sql": "INSERT INTO albums (Title, ArtistId)\nVALUES ('New Album', (SELECT ArtistId FROM artists WHERE Name = 'Accept'));"
+    },
+    {
+        "id": "26",
+        "sql": "INSERT INTO employees (FirstName, LastName, ReportsTo)\nSELECT 'Jane', 'Smith', EmployeeId\nFROM employees\nWHERE Title = 'IT Staff';"
+    },
+    {
+        "id": "27",
+        "sql": "INSERT INTO albums (Title, ArtistId)\nSELECT \n    'Long Album',\n    COALESCE(ArtistId, 1)\nFROM \n    artists\nWHERE \n    LENGTH(Name) > 10;"
+    },
+    {
+        "id": "28",
+        "sql": "DELETE FROM playlists \nWHERE PlaylistId NOT IN (SELECT DISTINCT PlaylistId FROM playlist_track);\n"
+    },
+    {
+        "id": "29",
+        "sql": "DELETE FROM artists \nWHERE ArtistId NOT IN (SELECT DISTINCT ArtistId FROM albums);\n"
+    },
+    {
+        "id": "30",
+        "sql": "DELETE FROM tracks\nWHERE TrackId IN (\n    SELECT ii.TrackId FROM invoice_items ii\n    JOIN invoices i ON ii.InvoiceId = i.InvoiceId\n    WHERE i.Total > 15\n);"
+    },
+    {
+        "id": "31",
+        "sql": "DELETE FROM tracks\nWHERE UnitPrice <> 0.99\nAND AlbumId IN (\n    SELECT a.AlbumId FROM albums a\n    WHERE NOT EXISTS (\n        SELECT 1 FROM albums a2 WHERE a2.ArtistId = a.ArtistId AND a2.AlbumId <> a.AlbumId\n    )\n);\n"
+    },
+    {
+        "id": "32",
+        "sql": "DELETE FROM tracks\nWHERE LENGTH(Name) = (\n    SELECT MIN(LENGTH(Name)) FROM tracks\n);\n"
+    },
+    {
+        "id": "33",
+        "sql": "DELETE FROM invoice_items\nWHERE InvoiceId IN (\n    SELECT InvoiceId FROM invoices\n    WHERE InvoiceDate = (\n        SELECT MIN(InvoiceDate) FROM invoices WHERE CustomerId = invoices.CustomerId\n    )\n);\n"
+    },
+    {
+        "id": "34",
+        "sql": "DELETE FROM customers\nWHERE SupportRepId IN (\n    SELECT EmployeeId FROM employees\n    WHERE LENGTH(FirstName) = (\n        SELECT MIN(LENGTH(FirstName)) FROM employees\n    )\n);\n"
+    },
+    {
+        "id": "35",
+        "sql": "DELETE FROM invoice_items\nWHERE InvoiceId = (\n    SELECT InvoiceId FROM invoices\n    WHERE Total = (\n        SELECT MAX(Total) FROM invoices\n    )\n);\n"
+    },
+    {
+        "id": "36",
+        "sql": "DELETE FROM invoices\nWHERE CustomerId IN (\n    SELECT CustomerId FROM (\n        SELECT CustomerId, COUNT(InvoiceId) AS InvoiceCount\n        FROM invoices\n        GROUP BY CustomerId\n        ORDER BY InvoiceCount DESC\n        LIMIT 1\n    ) AS top_customer\n);\n"
+    }
+]

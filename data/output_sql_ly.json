@@ -1,0 +1,212 @@
+[
+    {
+        "id": "1",
+        "sql": "SELECT Title, Name FROM albums INNER JOIN artists USING (ArtistId);",
+        "question": "retrieve the album titles and the corresponding artist names ",
+        "evident": ""
+    },
+    {
+        "id": "2",
+        "sql": "SELECT m.firstname || ' ' || m.lastname AS 'Manager',\n       e.firstname || ' ' || e.lastname AS 'Direct report' \nFROM employees e\nINNER JOIN employees m ON m.employeeid = e.reportsto\nORDER BY manager;",
+        "question": "get the information on who is the direct report of whom, return fullname of manager and direct report, sorted by fullname of manager",
+        "evident": "If an employee reports to a manager, the value of the ReportsTo column of the employee’s row is equal to the value of the EmployeeId column of the manager’s row. In case an employee does not report to anyone, the ReportsTo column is NULL. Full name refers to firstname || ' ' || lastname"
+    },
+    {
+        "id": "3",
+        "sql": "SELECT DISTINCT\n e1.city,\n e1.firstName || ' ' || e1.lastname AS fullname\nFROM\n employees e1\nINNER JOIN employees e2 ON e2.city = e1.city \n   AND (e1.firstname <> e2.firstname AND e1.lastname <> e2.lastname)\nORDER BY\n e1.city;",
+        "question": "find the employees located in the same city, return city and fullname, sorted by city.",
+        "evident": "Full name refers to firstname || ' ' || lastname, there aren't employees who have the same first name and last name."
+    },
+    {
+        "id": "4",
+        "sql": "SELECT trackid,\n       name,\n       albumid\nFROM tracks\nWHERE albumid = (\n   SELECT albumid\n   FROM albums\n   WHERE title = 'Let There Be Rock'\n);",
+        "question": "Retrieve the trackid, name, and albumid for all tracks in the album titled 'Let There Be Rock'.",
+        "evident": ""
+    },
+    {
+        "id": "5",
+        "sql": "SELECT customerid,\n       firstname,\n       lastname\n  FROM customers\n WHERE supportrepid IN (\n           SELECT employeeid\n             FROM employees\n            WHERE country = 'Canada'\n       );\n",
+        "question": "Retrieve the customerid, firstname, and lastname for customers whose sales representatives are in Canada.",
+        "evident": ""
+    },
+    {
+        "id": "6",
+        "sql": "SELECT albumid,\n       title\n  FROM albums\n WHERE 10000000 > (\n                      SELECT sum(bytes) \n                        FROM tracks\n                       WHERE tracks.AlbumId = albums.AlbumId\n                  )\n ORDER BY title;",
+        "question": "Which albums have a total track size less than 10000000 bytes? List the album ID and title, sorted by title.",
+        "evident": "album ID refers to albumid"
+    },
+    {
+        "id": "7",
+        "sql": "SELECT albumid,\n       title,\n       (\n           SELECT count(trackid) \n             FROM tracks\n            WHERE tracks.AlbumId = albums.AlbumId\n       )\n       tracks_count\n  FROM albums\n ORDER BY tracks_count DESC;",
+        "question": "Retrieve the number of tracks in an album. List the album ID, title, and the number of tracks, sorted by the number of tracks in descending order.",
+        "evident": "album ID refers to albumid"
+    },
+    {
+        "id": "8",
+        "sql": "SELECT\n    CustomerId,\n    FirstName,\n    LastName,\n    Company\nFROM\n    Customers c\nWHERE\n    EXISTS (\n        SELECT \n            1 \n        FROM \n            Invoices\n        WHERE \n            CustomerId = c.CustomerId\n    )\nORDER BY\n    FirstName,\n    LastName; \n",
+        "question": "Which customers have made at least one purchase? List their customer ID, first name, last name, and company, sorted by first and last name.",
+        "evident": ""
+    },
+    {
+        "id": "9",
+        "sql": "WITH top_tracks AS (\n    SELECT trackid, name\n    FROM tracks\n    ORDER BY trackid\n    LIMIT 5\n)\nSELECT * FROM top_tracks;",
+        "question": "What are the first five tracks based on their track ID? List the track ID and name.",
+        "evident": "based on their track ID refers to ORDER BY trackid"
+    },
+    {
+        "id": "10",
+        "sql": "WITH customer_sales AS (\n    SELECT c.customerid,\n           c.firstname || ' ' || c.lastname AS customer_name,\n           ROUND(SUM(ii.unitprice * ii.quantity),2) AS total_sales\n    FROM customers c\n    INNER JOIN invoices i ON c.customerid = i.customerid\n    INNER JOIN invoice_items ii ON i.invoiceid = ii.invoiceid\n    GROUP BY c.customerid\n)\nSELECT customer_name, total_sales \nFROM customer_sales\nORDER BY total_sales DESC, customer_name\nLIMIT 5;",
+        "question": "Who are the top five customers with the highest total sales? List their full name and total sales amount.",
+        "evident": "full name refers to firstname || ' ' || lastname; total_sales retains two decimal places"
+    },
+    {
+        "id": "11",
+        "sql": "SELECT customerid,\n       firstname,\n       lastname,\n       CASE country \n           WHEN 'USA' \n               THEN 'Domestic' \n           ELSE 'Foreign' \n       END CustomerGroup\nFROM \n    customers\nORDER BY \n    LastName,\n    FirstName;",
+        "question": "Categorize customers categorized based on their country. Assign \"Domestic\" to those in the USA, and \"Foreign\" to others.List their ID, first name, last name, and customer group, sorted by last and first name.",
+        "evident": ""
+    },
+    {
+        "id": "12",
+        "sql": "INSERT INTO artists_backup \nSELECT ArtistId, Name\nFROM artists;",
+        "question": "To insert data into the artists_backup table with the data from the artists table, include their ID and name.",
+        "evident": ""
+    },
+    {
+        "id": "13",
+        "sql": "UPDATE employees\nSET email = LOWER(\n firstname || \".\" || lastname || \"@chinookcorp.com\"\n)\nORDER BY\n firstname\nLIMIT 1;",
+        "question": "Update the email of the first employee sorted by first name",
+        "evident": "The new email is a combination of the first name, a dot (.), the last name, and the suffix @chinookcorp.com, using all lowercase letters."
+    },
+    {
+        "id": "14",
+        "sql": "UPDATE tracks SET UnitPrice = ( SELECT AVG(UnitPrice) FROM tracks AS t2 WHERE t2.GenreId = tracks.GenreId ) WHERE GenreId IS NOT NULL;",
+        "question": "Update the UnitPrice of each track to be the average UnitPrice of all tracks in the same genre.",
+        "evident": ""
+    },
+    {
+        "id": "15",
+        "sql": "UPDATE tracks\nSET UnitPrice = (\n  SELECT MAX(UnitPrice)\n  FROM tracks AS t2\n  WHERE t2.AlbumId = tracks.AlbumId\n)\nWHERE AlbumId IS NOT NULL;",
+        "question": "Set each track's UnitPrice to the maximum UnitPrice among tracks in the same album",
+        "evident": ""
+    },
+    {
+        "id": "16",
+        "sql": "UPDATE playlists\nSET Name = 'Mixed Genre'\nWHERE PlaylistId IN (\n  SELECT pt.PlaylistId\n  FROM playlist_track pt\n  JOIN tracks t ON pt.TrackId = t.TrackId\n  GROUP BY pt.PlaylistId\n  HAVING COUNT(DISTINCT t.GenreId) > 1\n);",
+        "question": "Rename playlists to 'Mixed Genre' if they contain tracks from more than one genre",
+        "evident": ""
+    },
+    {
+        "id": "17",
+        "sql": "UPDATE genres\nSET Name = 'Misc'\nWHERE GenreId IN (\n  SELECT GenreId\n  FROM tracks\n  GROUP BY GenreId\n  HAVING COUNT(*) < 10\n);",
+        "question": "Rename genres to 'Misc' if they have fewer than 10 associated tracks",
+        "evident": ""
+    },
+    {
+        "id": "18",
+        "sql": "UPDATE invoices\nSET InvoiceDate = (\n  SELECT MAX(InvoiceDate)\n  FROM invoices AS inv2\n  WHERE inv2.CustomerId = invoices.CustomerId\n)\nWHERE InvoiceDate < (\n  SELECT MAX(InvoiceDate)\n  FROM invoices AS inv2\n  WHERE inv2.CustomerId = invoices.CustomerId\n);",
+        "question": "For each customer, update the invoice date of any invoice that is earlier than the latest invoice date of that customer to the latest invoice date.",
+        "evident": ""
+    },
+    {
+        "id": "19",
+        "sql": "UPDATE invoice_items\nSET UnitPrice = (\n  SELECT UnitPrice * 1.2\n  FROM tracks\n  WHERE tracks.TrackId = invoice_items.TrackId\n    AND tracks.GenreId = (SELECT GenreId FROM genres WHERE Name = 'Rock')\n)\nWHERE TrackId IN (\n  SELECT TrackId\n  FROM tracks\n  WHERE GenreId = (SELECT GenreId FROM genres WHERE Name = 'Rock')\n);",
+        "question": "Update UnitPrice in invoice_items to a value 20% higher than the corresponding track's UnitPrice, but only for tracks whose genre is 'Rock'.",
+        "evident": ""
+    },
+    {
+        "id": "20",
+        "sql": "UPDATE customers\nSET Fax = Phone\nWHERE Fax IS NULL\n  AND Email LIKE '%@gmail.com';",
+        "question": "Set Fax in customers to match their phone number if Fax is null and the customer’s email domain is 'gmail.com'",
+        "evident": ""
+    },
+    {
+        "id": "21",
+        "sql": "UPDATE employees\nSET ReportsTo = (\n  SELECT EmployeeId\n  FROM employees AS boss\n  WHERE boss.Country = employees.Country\n  ORDER BY HireDate ASC\n  LIMIT 1\n)\nWHERE ReportsTo IS NULL;",
+        "question": "Update ReportsTo in employees to the highest-ranking employee in the same country, based on their hire date, if the current ReportsTo is null.",
+        "evident": "highest-ranking refers to earliest hire date."
+    },
+    {
+        "id": "22",
+        "sql": "UPDATE albums\nSET Title = Title || ' - Greatest Hits'\nWHERE AlbumId IN (\n  SELECT AlbumId\n  FROM tracks\n  GROUP BY AlbumId\n  HAVING COUNT(*) > 20\n)\nAND Title NOT LIKE '%Greatest Hits%';",
+        "question": "Update the Title in albums to append 'Greatest Hits' to albums with more than 20 tracks, but only if it's not already in the title.",
+        "evident": ""
+    },
+    {
+        "id": "23",
+        "sql": "UPDATE tracks\nSET Composer = 'Various Artists'\nWHERE Composer IS NULL\n  AND TrackId IN (\n    SELECT TrackId\n    FROM playlist_track\n    GROUP BY TrackId\n    HAVING COUNT(PlaylistId) > 1\n);",
+        "question": "Set Composer in tracks to 'Various Artists' if the track belongs to more than one playlist, but only if Composer is currently null.",
+        "evident": ""
+    },
+    {
+        "id": "24",
+        "sql": "UPDATE customers\nSET PostalCode = (\n  SELECT PostalCode\n  FROM employees\n  WHERE employees.EmployeeId = customers.SupportRepId\n    AND employees.City = customers.City\n)\nWHERE PostalCode IS NULL\n  AND SupportRepId IS NOT NULL;",
+        "question": "Update PostalCode in customers to match the postal code of their support representative if they reside in the same city and the customer’s postal code is null.",
+        "evident": ""
+    },
+    {
+        "id": "25",
+        "sql": "INSERT INTO albums (Title, ArtistId)\nVALUES ('New Album', (SELECT ArtistId FROM artists WHERE Name = 'Accept'));",
+        "question": "Insert the IDs of all Artists named 'Accept' into the albums table and set the Title to 'New Album'.",
+        "evident": ""
+    },
+    {
+        "id": "26",
+        "sql": "INSERT INTO employees (FirstName, LastName, ReportsTo)\nSELECT 'Jane', 'Smith', EmployeeId\nFROM employees\nWHERE Title = 'IT Staff';",
+        "question": "Insert a new employee named Jane Smith into the employees table. Set the ReportsTo field to the EmployeeId of the current employee whose Title is 'IT Staff'.",
+        "evident": ""
+    },
+    {
+        "id": "27",
+        "sql": "INSERT INTO albums (Title, ArtistId)\nSELECT \n    'Long Album',\n    COALESCE(ArtistId, 1)\nFROM \n    artists\nWHERE \n    LENGTH(Name) > 10;",
+        "question": "Insert data into the albums table. For each artist in the artists table whose Name length is greater than 10, insert a new album record with the corresponding ArtistId and the title \"Long Album\". If ArtistId is NULL, use 1 as the default value.",
+        "evident": ""
+    },
+    {
+        "id": "28",
+        "sql": "DELETE FROM playlists \nWHERE PlaylistId NOT IN (SELECT DISTINCT PlaylistId FROM playlist_track);",
+        "question": "Delete from the playlists table those records whose PlaylistId is not in the playlist_track table.",
+        "evident": ""
+    },
+    {
+        "id": "29",
+        "sql": "DELETE FROM artists \nWHERE ArtistId NOT IN (SELECT DISTINCT ArtistId FROM albums);",
+        "question": "Delete from the artists table those records whose ArtistId is not in the albums table.",
+        "evident": ""
+    },
+    {
+        "id": "30",
+        "sql": "DELETE FROM tracks\nWHERE TrackId IN (\n    SELECT ii.TrackId FROM invoice_items ii\n    JOIN invoices i ON ii.InvoiceId = i.InvoiceId \n    Where UnitPrice <> 0.99 and BillingCity <> 'Santiago'\n);",
+        "question": "Delete from the tracks table those records where UnitPrice is not 0.99 and BillingCity is not 'Santiago'",
+        "evident": ""
+    },
+    {
+        "id": "31",
+        "sql": "DELETE FROM tracks\nWHERE UnitPrice <> 0.99\nAND AlbumId IN (\n    SELECT a.AlbumId FROM albums a\n    WHERE NOT EXISTS (\n        SELECT 1 FROM albums a2 WHERE a2.ArtistId = a.ArtistId AND a2.AlbumId <> a.AlbumId\n    )\n);",
+        "question": "Remove from the tracks table all tracks whose UnitPrice is not equal to 0.99 and that belong to artists who have only released one album.",
+        "evident": ""
+    },
+    {
+        "id": "32",
+        "sql": "DELETE FROM tracks\nWHERE LENGTH(Name) = (\n    SELECT MIN(LENGTH(Name)) FROM tracks\n);",
+        "question": "Delete all records with the shortest track name from the tracks table.",
+        "evident": ""
+    },
+    {
+        "id": "33",
+        "sql": "DELETE FROM invoice_items\nWHERE InvoiceId IN (\n    SELECT InvoiceId FROM invoices\n    WHERE InvoiceDate = (\n        SELECT MIN(InvoiceDate) FROM invoices WHERE CustomerId = invoices.CustomerId\n    )\n);",
+        "question": "Delete all records in the invoice_items table that are associated with the oldest invoice for each customer.",
+        "evident": ""
+    },
+    {
+        "id": "34",
+        "sql": "DELETE FROM customers\nWHERE SupportRepId IN (\n    SELECT EmployeeId FROM employees\n    WHERE LENGTH(FirstName) = (\n        SELECT MIN(LENGTH(FirstName)) FROM employees\n    )\n);",
+        "question": "Delete all records in the customers table where SupportRepId exists in the ID of the employee with the shortest first name.",
+        "evident": ""
+    },
+    {
+        "id": "35",
+        "sql": "DELETE FROM invoice_items\nWHERE InvoiceId = (\n    SELECT InvoiceId FROM invoices\n    WHERE Total = (\n        SELECT MAX(Total) FROM invoices\n    )\n);",
+        "question": "Delete the record with the largest total in the invoice_items table.",
+        "evident": ""
+    }
+]

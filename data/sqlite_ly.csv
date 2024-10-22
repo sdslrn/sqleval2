@@ -1,0 +1,262 @@
+id,sql,question,evident
+1,"SELECT Title, Name FROM albums INNER JOIN artists USING (ArtistId);",retrieve the album titles and the corresponding artist names ,
+2,"SELECT m.firstname || ' ' || m.lastname AS 'Manager',
+       e.firstname || ' ' || e.lastname AS 'Direct report' 
+FROM employees e
+INNER JOIN employees m ON m.employeeid = e.reportsto
+ORDER BY manager;","get the information on who is the direct report of whom, return fullname of manager and direct report, sorted by fullname of manager","If an employee reports to a manager, the value of the ReportsTo column of the employee¡¯s row is equal to the value of the EmployeeId column of the manager¡¯s row. In case an employee does not report to anyone, the ReportsTo column is NULL. Full name refers to firstname || ' ' || lastname"
+3,"SELECT DISTINCT
+ e1.city,
+ e1.firstName || ' ' || e1.lastname AS fullname
+FROM
+ employees e1
+INNER JOIN employees e2 ON e2.city = e1.city 
+   AND (e1.firstname <> e2.firstname AND e1.lastname <> e2.lastname)
+ORDER BY
+ e1.city;","find the employees located in the same city, return city and fullname, sorted by city.","Full name refers to firstname || ' ' || lastname, there aren't employees who have the same first name and last name."
+4,"SELECT trackid,
+       name,
+       albumid
+FROM tracks
+WHERE albumid = (
+   SELECT albumid
+   FROM albums
+   WHERE title = 'Let There Be Rock'
+);","Retrieve the trackid, name, and albumid for all tracks in the album titled 'Let There Be Rock'.",
+5,"SELECT customerid,
+       firstname,
+       lastname
+  FROM customers
+ WHERE supportrepid IN (
+           SELECT employeeid
+             FROM employees
+            WHERE country = 'Canada'
+       );
+","Retrieve the customerid, firstname, and lastname for customers whose sales representatives are in Canada.",
+6,"SELECT albumid,
+       title
+  FROM albums
+ WHERE 10000000 > (
+                      SELECT sum(bytes) 
+                        FROM tracks
+                       WHERE tracks.AlbumId = albums.AlbumId
+                  )
+ ORDER BY title;","Which albums have a total track size less than 10000000 bytes? List the album ID and title, sorted by title.",album ID refers to albumid
+7,"SELECT albumid,
+       title,
+       (
+           SELECT count(trackid) 
+             FROM tracks
+            WHERE tracks.AlbumId = albums.AlbumId
+       )
+       tracks_count
+  FROM albums
+ ORDER BY tracks_count DESC;","Retrieve the number of tracks in an album. List the album ID, title, and the number of tracks, sorted by the number of tracks in descending order.",album ID refers to albumid
+8,"SELECT
+    CustomerId,
+    FirstName,
+    LastName,
+    Company
+FROM
+    Customers c
+WHERE
+    EXISTS (
+        SELECT 
+            1 
+        FROM 
+            Invoices
+        WHERE 
+            CustomerId = c.CustomerId
+    )
+ORDER BY
+    FirstName,
+    LastName; 
+","Which customers have made at least one purchase? List their customer ID, first name, last name, and company, sorted by first and last name.",
+9,"WITH top_tracks AS (
+    SELECT trackid, name
+    FROM tracks
+    ORDER BY trackid
+    LIMIT 5
+)
+SELECT * FROM top_tracks;",What are the first five tracks based on their track ID? List the track ID and name.,based on their track ID refers to ORDER BY trackid
+10,"WITH customer_sales AS (
+    SELECT c.customerid,
+           c.firstname || ' ' || c.lastname AS customer_name,
+           ROUND(SUM(ii.unitprice * ii.quantity),2) AS total_sales
+    FROM customers c
+    INNER JOIN invoices i ON c.customerid = i.customerid
+    INNER JOIN invoice_items ii ON i.invoiceid = ii.invoiceid
+    GROUP BY c.customerid
+)
+SELECT customer_name, total_sales 
+FROM customer_sales
+ORDER BY total_sales DESC, customer_name
+LIMIT 5;",Who are the top five customers with the highest total sales? List their full name and total sales amount.,full name refers to firstname || ' ' || lastname; total_sales retains two decimal places
+11,"SELECT customerid,
+       firstname,
+       lastname,
+       CASE country 
+           WHEN 'USA' 
+               THEN 'Domestic' 
+           ELSE 'Foreign' 
+       END CustomerGroup
+FROM 
+    customers
+ORDER BY 
+    LastName,
+    FirstName;","Categorize customers categorized based on their country. Assign ""Domestic"" to those in the USA, and ""Foreign"" to others.List their ID, first name, last name, and customer group, sorted by last and first name.",
+12,"INSERT INTO artists_backup 
+SELECT ArtistId, Name
+FROM artists;","To insert data into the artists_backup table with the data from the artists table, include their ID and name.",
+13,"UPDATE employees
+SET email = LOWER(
+ firstname || ""."" || lastname || ""@chinookcorp.com""
+)
+ORDER BY
+ firstname
+LIMIT 1;",Update the email of the first employee sorted by first name,"The new email is a combination of the first name, a dot (.), the last name, and the suffix @chinookcorp.com, using all lowercase letters."
+14,UPDATE tracks SET UnitPrice = ( SELECT AVG(UnitPrice) FROM tracks AS t2 WHERE t2.GenreId = tracks.GenreId ) WHERE GenreId IS NOT NULL;,Update the UnitPrice of each track to be the average UnitPrice of all tracks in the same genre.,
+15,"UPDATE tracks
+SET UnitPrice = (
+  SELECT MAX(UnitPrice)
+  FROM tracks AS t2
+  WHERE t2.AlbumId = tracks.AlbumId
+)
+WHERE AlbumId IS NOT NULL;",Set each track's UnitPrice to the maximum UnitPrice among tracks in the same album,
+16,"UPDATE playlists
+SET Name = 'Mixed Genre'
+WHERE PlaylistId IN (
+  SELECT pt.PlaylistId
+  FROM playlist_track pt
+  JOIN tracks t ON pt.TrackId = t.TrackId
+  GROUP BY pt.PlaylistId
+  HAVING COUNT(DISTINCT t.GenreId) > 1
+);",Rename playlists to 'Mixed Genre' if they contain tracks from more than one genre,
+17,"UPDATE genres
+SET Name = 'Misc'
+WHERE GenreId IN (
+  SELECT GenreId
+  FROM tracks
+  GROUP BY GenreId
+  HAVING COUNT(*) < 10
+);",Rename genres to 'Misc' if they have fewer than 10 associated tracks,
+18,"UPDATE invoices
+SET InvoiceDate = (
+  SELECT MAX(InvoiceDate)
+  FROM invoices AS inv2
+  WHERE inv2.CustomerId = invoices.CustomerId
+)
+WHERE InvoiceDate < (
+  SELECT MAX(InvoiceDate)
+  FROM invoices AS inv2
+  WHERE inv2.CustomerId = invoices.CustomerId
+);","For each customer, update the invoice date of any invoice that is earlier than the latest invoice date of that customer to the latest invoice date.",
+19,"UPDATE invoice_items
+SET UnitPrice = (
+  SELECT UnitPrice * 1.2
+  FROM tracks
+  WHERE tracks.TrackId = invoice_items.TrackId
+    AND tracks.GenreId = (SELECT GenreId FROM genres WHERE Name = 'Rock')
+)
+WHERE TrackId IN (
+  SELECT TrackId
+  FROM tracks
+  WHERE GenreId = (SELECT GenreId FROM genres WHERE Name = 'Rock')
+);","Update UnitPrice in invoice_items to a value 20% higher than the corresponding track's UnitPrice, but only for tracks whose genre is 'Rock'.",
+20,"UPDATE customers
+SET Fax = Phone
+WHERE Fax IS NULL
+  AND Email LIKE '%@gmail.com';",Set Fax in customers to match their phone number if Fax is null and the customer¡¯s email domain is 'gmail.com',
+21,"UPDATE employees
+SET ReportsTo = (
+  SELECT EmployeeId
+  FROM employees AS boss
+  WHERE boss.Country = employees.Country
+  ORDER BY HireDate ASC
+  LIMIT 1
+)
+WHERE ReportsTo IS NULL;","Update ReportsTo in employees to the highest-ranking employee in the same country, based on their hire date, if the current ReportsTo is null.",highest-ranking refers to earliest hire date.
+22,"UPDATE albums
+SET Title = Title || ' - Greatest Hits'
+WHERE AlbumId IN (
+  SELECT AlbumId
+  FROM tracks
+  GROUP BY AlbumId
+  HAVING COUNT(*) > 20
+)
+AND Title NOT LIKE '%Greatest Hits%';","Update the Title in albums to append 'Greatest Hits' to albums with more than 20 tracks, but only if it's not already in the title.",
+23,"UPDATE tracks
+SET Composer = 'Various Artists'
+WHERE Composer IS NULL
+  AND TrackId IN (
+    SELECT TrackId
+    FROM playlist_track
+    GROUP BY TrackId
+    HAVING COUNT(PlaylistId) > 1
+);","Set Composer in tracks to 'Various Artists' if the track belongs to more than one playlist, but only if Composer is currently null.",
+24,"UPDATE customers
+SET PostalCode = (
+  SELECT PostalCode
+  FROM employees
+  WHERE employees.EmployeeId = customers.SupportRepId
+    AND employees.City = customers.City
+)
+WHERE PostalCode IS NULL
+  AND SupportRepId IS NOT NULL;",Update PostalCode in customers to match the postal code of their support representative if they reside in the same city and the customer¡¯s postal code is null.,
+25,"INSERT INTO albums (Title, ArtistId)
+VALUES ('New Album', (SELECT ArtistId FROM artists WHERE Name = 'Accept'));",Insert the IDs of all Artists named 'Accept' into the albums table and set the Title to 'New Album'.,
+26,"INSERT INTO employees (FirstName, LastName, ReportsTo)
+SELECT 'Jane', 'Smith', EmployeeId
+FROM employees
+WHERE Title = 'IT Staff';",Insert a new employee named Jane Smith into the employees table. Set the ReportsTo field to the EmployeeId of the current employee whose Title is 'IT Staff'.,
+27,"INSERT INTO albums (Title, ArtistId)
+SELECT 
+    'Long Album',
+    COALESCE(ArtistId, 1)
+FROM 
+    artists
+WHERE 
+    LENGTH(Name) > 10;","Insert data into the albums table. For each artist in the artists table whose Name length is greater than 10, insert a new album record with the corresponding ArtistId and the title ""Long Album"". If ArtistId is NULL, use 1 as the default value.",
+28,"DELETE FROM playlists 
+WHERE PlaylistId NOT IN (SELECT DISTINCT PlaylistId FROM playlist_track);",Delete from the playlists table those records whose PlaylistId is not in the playlist_track table.,
+29,"DELETE FROM artists 
+WHERE ArtistId NOT IN (SELECT DISTINCT ArtistId FROM albums);",Delete from the artists table those records whose ArtistId is not in the albums table.,
+30,"DELETE FROM tracks
+WHERE TrackId IN (
+    SELECT ii.TrackId FROM invoice_items ii
+    JOIN invoices i ON ii.InvoiceId = i.InvoiceId 
+    Where UnitPrice <> 0.99 and BillingCity <> 'Santiago'
+);",Delete from the tracks table those records where UnitPrice is not 0.99 and BillingCity is not 'Santiago',
+31,"DELETE FROM tracks
+WHERE UnitPrice <> 0.99
+AND AlbumId IN (
+    SELECT a.AlbumId FROM albums a
+    WHERE NOT EXISTS (
+        SELECT 1 FROM albums a2 WHERE a2.ArtistId = a.ArtistId AND a2.AlbumId <> a.AlbumId
+    )
+);",Remove from the tracks table all tracks whose UnitPrice is not equal to 0.99 and that belong to artists who have only released one album.,
+32,"DELETE FROM tracks
+WHERE LENGTH(Name) = (
+    SELECT MIN(LENGTH(Name)) FROM tracks
+);",Delete all records with the shortest track name from the tracks table.,
+33,"DELETE FROM invoice_items
+WHERE InvoiceId IN (
+    SELECT InvoiceId FROM invoices
+    WHERE InvoiceDate = (
+        SELECT MIN(InvoiceDate) FROM invoices WHERE CustomerId = invoices.CustomerId
+    )
+);",Delete all records in the invoice_items table that are associated with the oldest invoice for each customer.,
+34,"DELETE FROM customers
+WHERE SupportRepId IN (
+    SELECT EmployeeId FROM employees
+    WHERE LENGTH(FirstName) = (
+        SELECT MIN(LENGTH(FirstName)) FROM employees
+    )
+);",Delete all records in the customers table where SupportRepId exists in the ID of the employee with the shortest first name.,
+35,"DELETE FROM invoice_items
+WHERE InvoiceId = (
+    SELECT InvoiceId FROM invoices
+    WHERE Total = (
+        SELECT MAX(Total) FROM invoices
+    )
+);",Delete the record with the largest total in the invoice_items table.,
